@@ -52,7 +52,7 @@ fun SignUpScreen(
             Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.Top) {
                 Text(text = "Getting Started", fontSize = 24.sp, fontWeight = FontWeight.Bold)
                 Text(
-                    text = "Create an account to continue with your shopping",
+                    text = "Create an account to continue with your Instagram",
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Light
                 )

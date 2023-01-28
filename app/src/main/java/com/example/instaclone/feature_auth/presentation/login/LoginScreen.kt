@@ -26,6 +26,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -33,6 +35,8 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -64,7 +68,7 @@ fun LoginScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 28.dp, vertical = 100.dp)
-                .clip(RoundedCornerShape(16.dp))
+                .clip(RoundedCornerShape(20.dp))
                 .background(White20)
         )
         Column(
@@ -101,7 +105,8 @@ fun LoginScreen(
                 fontFamily = FontFamily.SansSerif,
                 fontStyle = FontStyle.Italic,
                 fontWeight = FontWeight.ExtraBold,
-                fontSize = 32.sp
+                fontSize = 32.sp,
+
             )
             Text(
                 text = "... to world of enjoyment",
@@ -112,9 +117,6 @@ fun LoginScreen(
             )
 
             OutlinedTextField(
-                modifier = Modifier
-                    .padding(16.dp)
-                    .clip(RoundedCornerShape(20.dp)),
                 value = email,
                 onValueChange = { email = it },
                 label = { Text(text = "Email Address") },
@@ -147,9 +149,6 @@ fun LoginScreen(
                 singleLine = true
             )
             OutlinedTextField(
-                modifier = Modifier
-                    .padding(16.dp)
-                    .clip(RoundedCornerShape(20.dp)),
                 value = password,
                 onValueChange = { password = it },
                 label = { Text(text = "Password") },
@@ -227,7 +226,19 @@ fun LoginScreen(
                               },
                 ) {
                     Text(
-                        text = "You don't have an account? Sign up"
+                        text = buildAnnotatedString {
+                            append("Don't have an account?")
+                            append(" ")
+                            withStyle(
+                                style = SpanStyle(
+                                    color = MaterialTheme.colors.secondary,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            ) {
+                                append("Sign Up")
+                            }
+                        },
+                        textAlign = TextAlign.Center
                     )
                 }
             }

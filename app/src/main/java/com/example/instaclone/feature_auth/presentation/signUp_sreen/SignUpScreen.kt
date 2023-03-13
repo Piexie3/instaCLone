@@ -31,7 +31,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.bettol.core.utils.Resource
+import com.example.instaclone.core.utils.Resource
 import com.example.instaclone.R
 import com.example.instaclone.feature_auth.presentation.AuthViewModel
 import com.example.instaclone.navigation.Screens
@@ -45,8 +45,6 @@ fun SignUpScreen(
     navController: NavController,
 
 ) {
-    val signUpFlow = viewModel.signUpFlow.collectAsState()
-
     Scaffold(
         topBar = {
             Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.Top) {
@@ -192,11 +190,11 @@ fun SignUpScreen(
                 )
             }
 
-            signUpFlow.value.let {
+            viewModel.signUpState.value.let {
                 when (it) {
                     is Resource.Error -> {
                         val context = LocalContext.current
-                        Toast.makeText(context, it.exception.message, Toast.LENGTH_LONG).show()
+                        Toast.makeText(context, it.message, Toast.LENGTH_SHORT).show()
                     }
                     is Resource.Loading -> {
                         CircularProgressIndicator(
@@ -211,13 +209,10 @@ fun SignUpScreen(
                     }
                     is Resource.Success -> {
                         LaunchedEffect(Unit) {
-                            navController.navigate(Screens.HomeScreen.route) {
-                                popUpTo(Screens.HomeScreen.route)
+                            navController.navigate(Screens.LoginScreen.route) {
+                                popUpTo(Screens.LoginScreen.route)
                             }
                         }
-                    }
-                    else -> {
-
                     }
                 }
             }

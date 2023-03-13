@@ -6,9 +6,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.instaclone.feature_auth.presentation.AuthViewModel
-import com.example.instaclone.feature_auth.presentation.HomeScreen
+import com.example.instaclone.feature_posts.presentation.home.HomeScreen
 import com.example.instaclone.feature_auth.presentation.login.LoginScreen
 import com.example.instaclone.feature_auth.presentation.signUp_sreen.SignUpScreen
+import com.example.instaclone.feature_posts.presentation.profile.ProfileScreen
+import com.example.instaclone.feature_posts.presentation.reels.ReelsScreen
+import com.example.instaclone.feature_posts.presentation.search.SearchScreen
+import com.example.instaclone.feature_posts.presentation.shopping.ShoppingScreen
+import com.example.instaclone.feature_posts.presentation.splash.SplashScreen
 
 
 @Composable
@@ -29,8 +34,23 @@ fun Navigation(
 
         }
         composable(route = Screens.HomeScreen.route) {
-            HomeScreen()
+            HomeScreen(navController)
         }
+        composable(route = Screens.SearchScreen.route) {
+            SearchScreen(navController)
+        }
+        composable(route = Screens.ReelsScreen.route) {
+            ReelsScreen(navController)
+        }
+        composable(route = Screens.ShoppingScreen.route) {
+            ShoppingScreen(navController)
+        }
+        composable(route = Screens.ProfileScreen.route) {
+            ProfileScreen(navController)
+        }
+//        composable(route = Screens.SplashScreen.route) {
+//            SplashScreen(navController,viewModel)
+//        }
     }
 
 }

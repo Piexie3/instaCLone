@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -21,32 +22,42 @@ import com.example.instaclone.R
 
 
 @Composable
-fun CircularImage() {
+fun CircularImage(
+    onClicked: ()->Unit,
+    modifier: Modifier = Modifier
+) {
     var viewed by remember {
         mutableStateOf(false)
     }
     Box(
-        modifier = Modifier
+        modifier = modifier
             .size(40.dp)
             .clip(CircleShape)
             .border(
                 shape = CircleShape,
-                border = BorderStroke(
-                    width = 2.dp,
-                    brush = Brush.linearGradient(
-                        colors = instagramGradient,
-                        start = Offset(
-                            0f, 0f
-                        ),
-                        end = Offset(
-                            100f, 100f
+                border = if (viewed){
+                    BorderStroke(
+                        width = 2.dp,
+                        brush = Brush.linearGradient(
+                            colors = instagramGradient,
+                            start = Offset(
+                                0f, 0f
+                            ),
+                            end = Offset(
+                                100f, 100f
+                            )
                         )
                     )
-                )
+                }else{
+                    BorderStroke(
+                        width = 2.dp,
+                        color = Color.Gray
+                    )
+                }
             )
             .padding(4.dp)
             .clickable {
-
+                onClicked()
             }
     ) {
         Image(

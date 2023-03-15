@@ -36,7 +36,7 @@ enum class BottomNavItem(val icon: Int, val route: String){
 
 @Composable
 fun BottomNavMenu(
-    selectedItem: BottomNavItem,
+    selectedItem: BottomNavItem? = null,
     navController: NavController
 ) {
     Row(horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically){

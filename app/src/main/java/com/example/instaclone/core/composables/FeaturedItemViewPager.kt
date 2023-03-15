@@ -18,7 +18,7 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import com.example.instaclone.R
-import com.example.instaclone.feature_posts.data.dto.PostItemDto
+import com.example.instaclone.feature_user.data.dto.PostItemDto
 import com.google.accompanist.pager.HorizontalPagerIndicator
 
 @OptIn(ExperimentalPagerApi::class)
@@ -45,9 +45,9 @@ fun FeaturedProductsViewPager(
                     .data(image)
                     .crossfade(true)
                     .build(),
-                placeholder = painterResource(R.drawable.instalogo),
+                placeholder = painterResource(R.drawable.insta_logo),
                 error = painterResource(R.drawable.ic_broken_image),
-                fallback = painterResource(R.drawable.instalogo),
+                fallback = painterResource(R.drawable.insta_logo),
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier

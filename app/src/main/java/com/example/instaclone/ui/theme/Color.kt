@@ -56,6 +56,7 @@ val GreenGrey90 = Color(0xFFdcefe4)
 
 
 val blue = Color(0xFF5851DB)
+val urlColor = Color(0xFF3D3D91)
 val orange = Color(0xFFF56040)
 val yellow = Color(0xFFFCAF45)
 

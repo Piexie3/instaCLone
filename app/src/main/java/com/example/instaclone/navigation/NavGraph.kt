@@ -1,36 +1,34 @@
 package com.example.instaclone.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.instaclone.feature_auth.presentation.AuthViewModel
-import com.example.instaclone.feature_posts.presentation.home.HomeScreen
+import com.example.instaclone.feature_post.presentation.home.HomeScreen
 import com.example.instaclone.feature_auth.presentation.login.LoginScreen
 import com.example.instaclone.feature_auth.presentation.signUp_sreen.SignUpScreen
-import com.example.instaclone.feature_posts.presentation.profile.ProfileScreen
-import com.example.instaclone.feature_posts.presentation.reels.ReelsScreen
-import com.example.instaclone.feature_posts.presentation.search.SearchScreen
-import com.example.instaclone.feature_posts.presentation.shopping.ShoppingScreen
-import com.example.instaclone.feature_posts.presentation.splash.SplashScreen
+import com.example.instaclone.feature_user.presentation.profile.ProfileScreen
+import com.example.instaclone.feature_user.presentation.reels.ReelsScreen
+import com.example.instaclone.feature_user.presentation.search.SearchScreen
+import com.example.instaclone.feature_user.presentation.shopping.ShoppingScreen
 
 
 @Composable
 fun Navigation(
-    viewModel: AuthViewModel,
     navController: NavHostController = rememberNavController(),
 ) {
     NavHost(
         navController = navController,
-        startDestination = Screens.SignUpScreen.route
+        startDestination = Screens.LoginScreen.route
     ) {
-
         composable(route = Screens.LoginScreen.route) {
-            LoginScreen(viewModel, navController )
+            LoginScreen(navController )
         }
         composable(route = Screens.SignUpScreen.route) {
-            SignUpScreen(viewModel, navController)
+            SignUpScreen(navController)
 
         }
         composable(route = Screens.HomeScreen.route) {
@@ -49,7 +47,7 @@ fun Navigation(
             ProfileScreen(navController)
         }
 //        composable(route = Screens.SplashScreen.route) {
-//            SplashScreen(navController,viewModel)
+//            SplashScreen(navController)
 //        }
     }
 

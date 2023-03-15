@@ -30,6 +30,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.instaclone.core.utils.Resource
 import com.example.instaclone.R
@@ -41,10 +42,9 @@ import com.example.instaclone.ui.theme.Violet30
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter", "UnrememberedMutableState")
 @Composable
 fun SignUpScreen(
-    viewModel: AuthViewModel,
     navController: NavController,
-
 ) {
+    val viewModel: AuthViewModel = hiltViewModel()
     Scaffold(
         topBar = {
             Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.Top) {
@@ -57,22 +57,22 @@ fun SignUpScreen(
             }
         }
     ) {
-        var userName by remember {
+        val userName = remember {
             mutableStateOf("")
         }
-        var email by remember {
+        val email = remember {
             mutableStateOf("")
         }
-        var password by remember {
+        val password = remember {
             mutableStateOf("")
         }
 
         val isEmailValid by derivedStateOf {
-            Patterns.EMAIL_ADDRESS.matcher(email).matches()
+            Patterns.EMAIL_ADDRESS.matcher(email.value).matches()
         }
 
         val isPasswordValid by derivedStateOf {
-            password.length > 7
+            password.value.length > 7
         }
 
         var isPasswordVisible by remember {
@@ -90,9 +90,9 @@ fun SignUpScreen(
             Spacer(modifier = Modifier.height(64.dp))
 
             OutlinedTextField(
-                value = userName,
+                value = userName.value,
                 onValueChange = {
-                    userName = it
+                    userName.value = it
                 },
                 label = {
                     Text(text = "Name")
@@ -107,8 +107,8 @@ fun SignUpScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             OutlinedTextField(
-                value = email,
-                onValueChange = { email = it },
+                value = email.value,
+                onValueChange = { email.value = it },
                 label = { Text(text = "Email Address") },
                 placeholder = { Text(text = "abc@domain.com") },
                 leadingIcon = {
@@ -126,9 +126,9 @@ fun SignUpScreen(
                 ),
                 isError = !isEmailValid,
                 trailingIcon = {
-                    if (email.isNotBlank()) {
+                    if (email.value.isNotBlank()) {
                         IconButton(
-                            onClick = { email = "" }) {
+                            onClick = { email.value = "" }) {
                             Icon(
                                 imageVector = Icons.Default.Clear,
                                 contentDescription = "Clear email"
@@ -142,8 +142,8 @@ fun SignUpScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             OutlinedTextField(
-                value = password,
-                onValueChange = { password = it },
+                value = password.value,
+                onValueChange = { password.value = it },
                 label = { Text(text = "Password") },
                 placeholder = { Text(text = "password") },
                 leadingIcon = {
@@ -180,7 +180,7 @@ fun SignUpScreen(
             Button(
                 enabled = isEmailValid && isPasswordValid,
                 onClick = {
-                    viewModel.signUp(userName, email, password)
+                    viewModel.signUp(userName.value, email.value, password.value)
                 },
                 shape = RoundedCornerShape(32.dp)
             ) {
@@ -188,13 +188,9 @@ fun SignUpScreen(
                     modifier = Modifier
                         .padding(12.dp), text = "Sign Up", textAlign = TextAlign.Center
                 )
-            }
-
-            viewModel.signUpState.value.let {
-                when (it) {
+                when (val result = viewModel.signUpState.value) {
                     is Resource.Error -> {
-                        val context = LocalContext.current
-                        Toast.makeText(context, it.message, Toast.LENGTH_SHORT).show()
+                        Toast.makeText(LocalContext.current, result.message, Toast.LENGTH_SHORT).show()
                     }
                     is Resource.Loading -> {
                         CircularProgressIndicator(
@@ -205,13 +201,18 @@ fun SignUpScreen(
                                     color = Violet30,
                                     width = 4.dp
                                 )
+                                .fillMaxSize()
                         )
                     }
                     is Resource.Success -> {
-                        LaunchedEffect(Unit) {
-                            navController.navigate(Screens.LoginScreen.route) {
-                                popUpTo(Screens.LoginScreen.route)
+                        if (result.data == true) {
+                            navController.navigate(Screens.HomeScreen.route) {
+                                popUpTo(Screens.LoginScreen.route) {
+                                    inclusive = true
+                                }
                             }
+                        } else {
+                            Toast.makeText(LocalContext.current, "Sign Up failed", Toast.LENGTH_SHORT).show()
                         }
                     }
                 }

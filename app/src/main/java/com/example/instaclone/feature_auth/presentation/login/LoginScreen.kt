@@ -1,6 +1,5 @@
 package com.example.instaclone.feature_auth.presentation.login
 
-import android.annotation.SuppressLint
 import android.util.Patterns
 import android.widget.Toast
 import androidx.compose.foundation.Image
@@ -39,21 +38,21 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.instaclone.core.utils.Resource
 import com.example.instaclone.R
+import com.example.instaclone.core.utils.Resource
 import com.example.instaclone.feature_auth.presentation.AuthViewModel
 import com.example.instaclone.navigation.Screens
 import com.example.instaclone.ui.theme.DarkGreen10
 import com.example.instaclone.ui.theme.Violet30
 import com.example.instaclone.ui.theme.White20
 
-@SuppressLint("UnrememberedMutableState")
 @Composable
 fun LoginScreen(
-    viewModel: AuthViewModel,
     navController: NavController
 ) {
+    val viewModel: AuthViewModel = hiltViewModel()
     val context = LocalContext.current
     Box(modifier = Modifier.fillMaxSize()) {
         Image(
@@ -62,7 +61,6 @@ fun LoginScreen(
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop
         )
-
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -80,19 +78,23 @@ fun LoginScreen(
 
             val focusManager = LocalFocusManager.current
 
-            var email by remember {
+            val email = remember {
                 mutableStateOf("")
             }
-            var password by remember {
+            val password = remember {
                 mutableStateOf("")
             }
 
-            val isEmailValid by derivedStateOf {
-                Patterns.EMAIL_ADDRESS.matcher(email).matches()
+            val isEmailValid by remember {
+                derivedStateOf {
+                    Patterns.EMAIL_ADDRESS.matcher(email.value).matches()
+                }
             }
 
-            val isPasswordValid by derivedStateOf {
-                password.length > 7
+            val isPasswordValid by remember {
+                derivedStateOf {
+                    password.value.length > 7
+                }
             }
 
             var isPasswordVisible by remember {
@@ -106,7 +108,7 @@ fun LoginScreen(
                 fontWeight = FontWeight.ExtraBold,
                 fontSize = 32.sp,
 
-            )
+                )
             Text(
                 text = "... to world of enjoyment",
                 fontFamily = FontFamily.SansSerif,
@@ -116,8 +118,8 @@ fun LoginScreen(
             )
 
             OutlinedTextField(
-                value = email,
-                onValueChange = { email = it },
+                value = email.value,
+                onValueChange = { email.value = it },
                 label = { Text(text = "Email Address") },
                 placeholder = { Text(text = "abc@domain.com") },
                 leadingIcon = {
@@ -135,9 +137,9 @@ fun LoginScreen(
                 ),
                 isError = !isEmailValid,
                 trailingIcon = {
-                    if (email.isNotBlank()) {
+                    if (email.value.isNotBlank()) {
                         IconButton(
-                            onClick = { email = "" }) {
+                            onClick = { email.value = "" }) {
                             Icon(
                                 imageVector = Icons.Default.Clear,
                                 contentDescription = "Clear email"
@@ -148,8 +150,8 @@ fun LoginScreen(
                 singleLine = true
             )
             OutlinedTextField(
-                value = password,
-                onValueChange = { password = it },
+                value = password.value,
+                onValueChange = { password.value = it },
                 label = { Text(text = "Password") },
                 placeholder = { Text(text = "password") },
                 leadingIcon = {
@@ -196,7 +198,7 @@ fun LoginScreen(
 
             Button(
                 onClick = {
-                    viewModel.signIn(email, password)
+                    viewModel.signIn(email.value, password.value)
                 },
                 enabled = isEmailValid && isPasswordValid,
                 modifier = Modifier
@@ -211,6 +213,34 @@ fun LoginScreen(
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold
                 )
+                when (val result = viewModel.signInState.value) {
+                    is Resource.Error -> {
+                        Toast.makeText(context, result.message, Toast.LENGTH_SHORT).show()
+                    }
+                    is Resource.Loading -> {
+                        CircularProgressIndicator(
+                            modifier = Modifier
+                                .size(14.dp)
+                                .border(
+                                    shape = MaterialTheme.shapes.medium,
+                                    color = Violet30,
+                                    width = 4.dp
+                                )
+                                .fillMaxSize()
+                        )
+                    }
+                    is Resource.Success -> {
+                        if (result.data==true) {
+                            navController.navigate(Screens.HomeScreen.route) {
+                                popUpTo(Screens.LoginScreen.route) {
+                                    inclusive = true
+                                }
+                            }
+                        } else {
+                            Toast.makeText(context, "Sign in failed", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }
             }
 
 
@@ -221,8 +251,10 @@ fun LoginScreen(
             ) {
                 TextButton(
                     onClick = {
-                              navController.navigate(Screens.SignUpScreen.route)
-                              },
+                        navController.navigate(Screens.SignUpScreen.route) {
+                            launchSingleTop = true
+                        }
+                    },
                 ) {
                     Text(
                         text = buildAnnotatedString {
@@ -244,32 +276,5 @@ fun LoginScreen(
 
         }
 
-        viewModel.signInState.value.let {
-            when (it){
-                is Resource.Success ->{
-                    LaunchedEffect(Unit){
-                        navController.navigate(Screens.HomeScreen.route) {
-                            popUpTo(Screens.HomeScreen.route) {
-                                inclusive = true
-                            }
-                        }
-                    }
-                }
-                is Resource.Loading ->{
-                    CircularProgressIndicator(
-                        modifier = Modifier
-                            .size(14.dp)
-                            .border(
-                                shape = MaterialTheme.shapes.medium,
-                                color = Violet30,
-                                width = 4.dp
-                            )
-                    )
-                }
-                is Resource.Error ->{
-                    Toast.makeText(context, it.message, Toast.LENGTH_SHORT).show()
-                }
-            }
-        }
     }
 }

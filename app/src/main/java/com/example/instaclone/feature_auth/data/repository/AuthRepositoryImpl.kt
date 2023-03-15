@@ -3,7 +3,7 @@ package com.example.instaclone.feature_auth.data.repository
 import com.example.instaclone.core.utils.Constans
 import com.example.instaclone.core.utils.Resource
 import com.example.instaclone.feature_auth.domain.repository.AuthRepository
-import com.example.instaclone.feature_posts.domain.models.User
+import com.example.instaclone.feature_user.domain.models.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore

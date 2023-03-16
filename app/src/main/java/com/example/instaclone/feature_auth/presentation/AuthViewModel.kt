@@ -32,14 +32,18 @@ class AuthViewModel @Inject constructor(
     fun signIn(email: String, password: String) {
         viewModelScope.launch {
             authUseCases.signInUseCase(email, password).collect {
-                _signUpState.value = it
+                _signInState.value = it
             }
         }
     }
 
     fun signUp(email: String, password: String, userName: String) {
         viewModelScope.launch {
-            authUseCases.signUpUseCase(email, password, userName).collect {
+            authUseCases.signUpUseCase(
+                email=email,
+                password = password,
+                userName = userName
+            ).collect {
                 _signUpState.value = it
             }
         }
@@ -50,7 +54,7 @@ class AuthViewModel @Inject constructor(
             authUseCases.signOutUseCase().collect {
                 _signOutState.value = it
                 if (it == Resource.Success(true)) {
-                    _signInState.value = Resource.Success(false)
+                    _signOutState.value = Resource.Success(false)
                 }
             }
         }

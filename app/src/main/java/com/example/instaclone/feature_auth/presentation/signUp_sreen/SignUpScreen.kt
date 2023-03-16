@@ -57,28 +57,36 @@ fun SignUpScreen(
             }
         }
     ) {
-        val userName = remember {
+        var userName by remember {
             mutableStateOf("")
         }
-        val email = remember {
+        var email by remember {
             mutableStateOf("")
         }
-        val password = remember {
+        var password by remember {
             mutableStateOf("")
         }
 
-        val isEmailValid by derivedStateOf {
-            Patterns.EMAIL_ADDRESS.matcher(email.value).matches()
-        }
+        val isEmailValid by remember {
+            derivedStateOf {
+                Patterns.EMAIL_ADDRESS.matcher(email).matches()
 
-        val isPasswordValid by derivedStateOf {
-            password.value.length > 7
+            }
+        }
+        val isUserNameValid by remember {
+            derivedStateOf {
+                userName.length > 1
+            }
+        }
+        val isPasswordValid by remember {
+            derivedStateOf {
+                password.length > 7
+            }
         }
 
         var isPasswordVisible by remember {
             mutableStateOf(false)
         }
-
         val focusManager = LocalFocusManager.current
         Column(
             Modifier
@@ -90,9 +98,9 @@ fun SignUpScreen(
             Spacer(modifier = Modifier.height(64.dp))
 
             OutlinedTextField(
-                value = userName.value,
+                value = userName,
                 onValueChange = {
-                    userName.value = it
+                    userName = it
                 },
                 label = {
                     Text(text = "Name")
@@ -102,13 +110,14 @@ fun SignUpScreen(
                     autoCorrect = true,
                     keyboardType = KeyboardType.Email,
                 ),
+                isError = !isUserNameValid
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
             OutlinedTextField(
-                value = email.value,
-                onValueChange = { email.value = it },
+                value = email,
+                onValueChange = { email = it },
                 label = { Text(text = "Email Address") },
                 placeholder = { Text(text = "abc@domain.com") },
                 leadingIcon = {
@@ -126,9 +135,9 @@ fun SignUpScreen(
                 ),
                 isError = !isEmailValid,
                 trailingIcon = {
-                    if (email.value.isNotBlank()) {
+                    if (email.isNotBlank()) {
                         IconButton(
-                            onClick = { email.value = "" }) {
+                            onClick = { email = "" }) {
                             Icon(
                                 imageVector = Icons.Default.Clear,
                                 contentDescription = "Clear email"
@@ -142,8 +151,8 @@ fun SignUpScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             OutlinedTextField(
-                value = password.value,
-                onValueChange = { password.value = it },
+                value = password,
+                onValueChange = { password = it },
                 label = { Text(text = "Password") },
                 placeholder = { Text(text = "password") },
                 leadingIcon = {
@@ -180,7 +189,7 @@ fun SignUpScreen(
             Button(
                 enabled = isEmailValid && isPasswordValid,
                 onClick = {
-                    viewModel.signUp(userName.value, email.value, password.value)
+                    viewModel.signUp(userName, email, password)
                 },
                 shape = RoundedCornerShape(32.dp)
             ) {
@@ -211,8 +220,6 @@ fun SignUpScreen(
                                     inclusive = true
                                 }
                             }
-                        } else {
-                            Toast.makeText(LocalContext.current, "Sign Up failed", Toast.LENGTH_SHORT).show()
                         }
                     }
                 }

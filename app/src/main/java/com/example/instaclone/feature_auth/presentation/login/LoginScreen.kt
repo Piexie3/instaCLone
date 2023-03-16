@@ -78,29 +78,28 @@ fun LoginScreen(
 
             val focusManager = LocalFocusManager.current
 
-            val email = remember {
+            var email by remember {
                 mutableStateOf("")
             }
-            val password = remember {
+            var password by remember {
                 mutableStateOf("")
             }
 
             val isEmailValid by remember {
                 derivedStateOf {
-                    Patterns.EMAIL_ADDRESS.matcher(email.value).matches()
+                    Patterns.EMAIL_ADDRESS.matcher(email).matches()
+
                 }
             }
-
             val isPasswordValid by remember {
                 derivedStateOf {
-                    password.value.length > 7
+                    password.length > 7
                 }
             }
 
             var isPasswordVisible by remember {
                 mutableStateOf(false)
             }
-
             Text(
                 text = "Welcome Back...",
                 fontFamily = FontFamily.SansSerif,
@@ -118,8 +117,8 @@ fun LoginScreen(
             )
 
             OutlinedTextField(
-                value = email.value,
-                onValueChange = { email.value = it },
+                value = email,
+                onValueChange = { email = it },
                 label = { Text(text = "Email Address") },
                 placeholder = { Text(text = "abc@domain.com") },
                 leadingIcon = {
@@ -137,9 +136,9 @@ fun LoginScreen(
                 ),
                 isError = !isEmailValid,
                 trailingIcon = {
-                    if (email.value.isNotBlank()) {
+                    if (email.isNotBlank()) {
                         IconButton(
-                            onClick = { email.value = "" }) {
+                            onClick = { email = "" }) {
                             Icon(
                                 imageVector = Icons.Default.Clear,
                                 contentDescription = "Clear email"
@@ -150,8 +149,8 @@ fun LoginScreen(
                 singleLine = true
             )
             OutlinedTextField(
-                value = password.value,
-                onValueChange = { password.value = it },
+                value = password,
+                onValueChange = { password = it },
                 label = { Text(text = "Password") },
                 placeholder = { Text(text = "password") },
                 leadingIcon = {
@@ -198,7 +197,7 @@ fun LoginScreen(
 
             Button(
                 onClick = {
-                    viewModel.signIn(email.value, password.value)
+                    viewModel.signIn(email, password)
                 },
                 enabled = isEmailValid && isPasswordValid,
                 modifier = Modifier
@@ -236,8 +235,6 @@ fun LoginScreen(
                                     inclusive = true
                                 }
                             }
-                        } else {
-                            Toast.makeText(context, "Sign in failed", Toast.LENGTH_SHORT).show()
                         }
                     }
                 }

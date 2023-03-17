@@ -1,6 +1,5 @@
-package com.example.instaclone.feature_auth.presentation.signUp_sreen
+package com.example.instaclone.feature_auth.presentation.signup
 
-import android.annotation.SuppressLint
 import android.util.Patterns
 import android.widget.Toast
 import androidx.compose.foundation.border
@@ -10,20 +9,19 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.*
 import androidx.compose.ui.text.style.TextAlign
@@ -32,31 +30,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.instaclone.feature_auth.presentation.viewModel.AuthViewModel
 import com.example.instaclone.core.utils.Resource
-import com.example.instaclone.R
-import com.example.instaclone.feature_auth.presentation.AuthViewModel
 import com.example.instaclone.navigation.Screens
-import com.example.instaclone.ui.theme.Violet30
 
-
-@SuppressLint("UnusedMaterialScaffoldPaddingParameter", "UnrememberedMutableState")
 @Composable
 fun SignUpScreen(
-    navController: NavController,
+    navController: NavController
 ) {
-    val viewModel: AuthViewModel = hiltViewModel()
-    Scaffold(
-        topBar = {
-            Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.Top) {
-                Text(text = "Getting Started", fontSize = 24.sp, fontWeight = FontWeight.Bold)
-                Text(
-                    text = "Create an account to continue with your Instagram",
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.Light
-                )
-            }
-        }
-    ) {
+    val viewModel: AuthViewModel= hiltViewModel()
+    val signUpFlow = viewModel.signUpFlow.collectAsState()
+
+    Column() {
         var userName by remember {
             mutableStateOf("")
         }
@@ -94,8 +79,14 @@ fun SignUpScreen(
                 .padding(16.dp)
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
-            Spacer(modifier = Modifier.height(64.dp))
+            Text(
+                text = "SignUp",
+                fontSize = 50.sp,
+                fontWeight = FontWeight.ExtraBold,
+                fontFamily = FontFamily.Cursive
+            )
 
             OutlinedTextField(
                 value = userName,
@@ -103,14 +94,24 @@ fun SignUpScreen(
                     userName = it
                 },
                 label = {
-                    Text(text = "Name")
+                    Text(text = "User Name")
+                },
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.Person,
+                        contentDescription = "Person"
+                    )
                 },
                 keyboardOptions = KeyboardOptions(
                     capitalization = KeyboardCapitalization.Words,
                     autoCorrect = true,
                     keyboardType = KeyboardType.Email,
+                    imeAction = ImeAction.Next
                 ),
-                isError = !isUserNameValid
+                isError = !isUserNameValid,
+                keyboardActions = KeyboardActions(
+                    onNext = { focusManager.moveFocus(FocusDirection.Down) }
+                )
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -158,7 +159,7 @@ fun SignUpScreen(
                 leadingIcon = {
                     Icon(
                         imageVector = Icons.Default.Lock,
-                        contentDescription = "Email Address"
+                        contentDescription = "Password"
                     )
                 },
                 keyboardOptions = KeyboardOptions(
@@ -174,9 +175,8 @@ fun SignUpScreen(
                     IconButton(
                         onClick = { isPasswordVisible = !isPasswordVisible }) {
                         Icon(
-                            painter = if (isPasswordVisible) painterResource(id = R.drawable.visibility) else painterResource(
-                                id = R.drawable.visibility_off
-                            ),
+                            imageVector = if (isPasswordVisible) Icons.Default.Visibility
+                            else Icons.Default.VisibilityOff,
                             contentDescription = "Toggle password Visibility"
                         )
                     }
@@ -187,9 +187,9 @@ fun SignUpScreen(
 
 
             Button(
-                enabled = isEmailValid && isPasswordValid,
+                enabled = isEmailValid && isPasswordValid && isUserNameValid,
                 onClick = {
-                    viewModel.signUp(userName, email, password)
+                    viewModel.signup(email, password, userName)
                 },
                 shape = RoundedCornerShape(32.dp)
             ) {
@@ -197,9 +197,13 @@ fun SignUpScreen(
                     modifier = Modifier
                         .padding(12.dp), text = "Sign Up", textAlign = TextAlign.Center
                 )
-                when (val result = viewModel.signUpState.value) {
+            }
+
+            signUpFlow.value.let {
+                when (it) {
                     is Resource.Error -> {
-                        Toast.makeText(LocalContext.current, result.message, Toast.LENGTH_SHORT).show()
+                        val context = LocalContext.current
+                        Toast.makeText(context, it.message, Toast.LENGTH_SHORT).show()
                     }
                     is Resource.Loading -> {
                         CircularProgressIndicator(
@@ -207,14 +211,13 @@ fun SignUpScreen(
                                 .size(14.dp)
                                 .border(
                                     shape = MaterialTheme.shapes.medium,
-                                    color = Violet30,
+                                    color = MaterialTheme.colors.secondary,
                                     width = 4.dp
                                 )
-                                .fillMaxSize()
                         )
                     }
                     is Resource.Success -> {
-                        if (result.data == true) {
+                        LaunchedEffect(Unit) {
                             navController.navigate(Screens.HomeScreen.route) {
                                 popUpTo(Screens.LoginScreen.route) {
                                     inclusive = true
@@ -222,6 +225,8 @@ fun SignUpScreen(
                             }
                         }
                     }
+
+                    else -> {}
                 }
             }
 
@@ -229,9 +234,11 @@ fun SignUpScreen(
 
             TextButton(
                 onClick = {
-                          navController.navigate(Screens.LoginScreen.route){
-                              popUpTo(Screens.LoginScreen.route)
-                          }
+                    navController.navigate(Screens.LoginScreen.route) {
+                        popUpTo(Screens.SignUpScreen.route) {
+                            inclusive = true
+                        }
+                    }
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {
@@ -241,7 +248,7 @@ fun SignUpScreen(
                         append(" ")
                         withStyle(
                             style = SpanStyle(
-                                color = MaterialTheme.colors.secondary,
+                                color = Color.Blue,
                                 fontWeight = FontWeight.Bold
                             )
                         ) {

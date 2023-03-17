@@ -31,7 +31,7 @@ enum class BottomNavItem(val icon: Int, val route: String){
     SEARCH(R.drawable.search, Screens.SearchScreen.route),
     REELS(R.drawable.video, Screens.ReelsScreen.route),
     SHOPPING(R.drawable.buy, Screens.ShoppingScreen.route),
-
+    PROFILE(R.drawable.ic_person, Screens.ProfileScreen.route)
 }
 
 @Composable
@@ -57,19 +57,5 @@ fun BottomNavMenu(
                     ColorFilter.tint(Color.DarkGray)
             )
         }
-        AsyncImage(
-            model = ImageRequest.Builder(LocalContext.current)
-                .data(R.drawable.profile_image)
-                .crossfade(true)
-                .build(),
-            contentDescription = "Profile",
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .clip(CircleShape)
-                .size(33.dp)
-                .clickable {
-                    navController.navigate(Screens.ProfileScreen.route)
-                }
-        )
     }
 }

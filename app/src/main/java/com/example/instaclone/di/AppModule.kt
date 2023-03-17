@@ -2,7 +2,8 @@ package com.example.instaclone.di
 
 import com.example.instaclone.feature_auth.data.repository.AuthRepositoryImpl
 import com.example.instaclone.feature_auth.domain.repository.AuthRepository
-import com.example.instaclone.feature_auth.domain.use_cases.*
+import com.example.instaclone.feature_auth.domain.use_cases.AuthUseCases
+import com.example.instaclone.feature_auth.domain.use_cases.IsUserAuthenticated
 import com.example.instaclone.feature_post.data.repository.PostRepositoryImpl
 import com.example.instaclone.feature_post.domain.repository.PostRepository
 import com.example.instaclone.feature_post.domain.use_cases.GetAllPostsUseCases
@@ -45,33 +46,33 @@ class AppModule {
     @Provides
     @Singleton
     fun providesAuthRepository(auth: FirebaseAuth, fireStore: FirebaseFirestore): AuthRepository {
-        return AuthRepositoryImpl(auth, fireStore)
+        return AuthRepositoryImpl(auth,fireStore)
     }
 
     @Provides
     @Singleton
-    fun provideAuthUseCases(repository: AuthRepository): AuthUseCases {
+    fun provideAuthUseCases(authRepository: AuthRepository): AuthUseCases {
         return AuthUseCases(
-            IsUserAuthenticated(repository),
-            FirebaseAuthState(repository),
-            SignInUseCase(repository),
-            SignOutUseCase(repository),
-            SignUpUsecase(repository)
+            isUserAuthenticated = IsUserAuthenticated(authRepository),
+//            firebaseAuthState = FirebaseAuthState(authRepository),
+//            signInUseCase = SignInUseCase(authRepository),
+//            signOutUseCase = SignOutUseCase(authRepository),
+//            signUpUseCase = SignUpUsecase(authRepository)
         )
     }
 
     @Provides
     @Singleton
-    fun providesUserRepository(fireStore: FirebaseFirestore): UserRepository{
-        return UserRepositoryImpl(fireStore)
+    fun providesUserRepository(fireStore: FirebaseFirestore,authRepository: AuthRepository): UserRepository{
+        return UserRepositoryImpl(fireStore, authRepository)
     }
 
     @Provides
     @Singleton
     fun providesUserUseCases(repository: UserRepository): UserUseCases{
         return UserUseCases(
-            GetUserDetailsUseCase(repository),
-            SetUserDetailsUseCase(repository)
+            getUserDetailsUseCase = GetUserDetailsUseCase(repository),
+            setUserDetailsUseCase = SetUserDetailsUseCase(repository)
         )
     }
     @Provides
@@ -84,8 +85,8 @@ class AppModule {
     @Singleton
     fun providesPostUseCases(repository: PostRepository): PostUseCases{
         return PostUseCases(
-            GetAllPostsUseCases(repository),
-            UploadPostUseCase(repository)
+            getAllPostsUseCases = GetAllPostsUseCases(repository),
+            uploadPostUseCase = UploadPostUseCase(repository)
         )
     }
 }

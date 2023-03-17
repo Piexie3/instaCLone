@@ -16,9 +16,10 @@ fun StatSection(modifier: Modifier = Modifier) {
         horizontalArrangement = Arrangement.SpaceAround,
         modifier = modifier
     ) {
-
         ProfileStat(numberText = "10", text = "Posts")
+        Spacer(modifier = Modifier.width(5.dp))
         ProfileStat(numberText = "118", text = "Followers")
+        Spacer(modifier = Modifier.width(5.dp))
         ProfileStat(numberText = "266", text = "Following")
     }
 }

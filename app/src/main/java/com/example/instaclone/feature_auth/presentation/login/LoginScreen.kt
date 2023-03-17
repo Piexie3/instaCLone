@@ -2,29 +2,23 @@ package com.example.instaclone.feature_auth.presentation.login
 
 import android.util.Patterns
 import android.widget.Toast
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontFamily
@@ -40,34 +34,19 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.instaclone.R
 import com.example.instaclone.core.utils.Resource
-import com.example.instaclone.feature_auth.presentation.AuthViewModel
 import com.example.instaclone.navigation.Screens
-import com.example.instaclone.ui.theme.DarkGreen10
-import com.example.instaclone.ui.theme.Violet30
-import com.example.instaclone.ui.theme.White20
+import com.example.instaclone.feature_auth.presentation.viewModel.AuthViewModel
+
 
 @Composable
 fun LoginScreen(
-    navController: NavController
+    navController: NavController,
 ) {
     val viewModel: AuthViewModel = hiltViewModel()
-    val context = LocalContext.current
-    Box(modifier = Modifier.fillMaxSize()) {
-        Image(
-            painter = painterResource(id = R.drawable.background),
-            contentDescription = "background Image",
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.Crop
-        )
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 28.dp, vertical = 100.dp)
-                .clip(RoundedCornerShape(20.dp))
-                .background(White20)
-        )
+    Column() {
+        val context = LocalContext.current
+        val loginFlow = viewModel.loginFlow.collectAsState()
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -88,9 +67,9 @@ fun LoginScreen(
             val isEmailValid by remember {
                 derivedStateOf {
                     Patterns.EMAIL_ADDRESS.matcher(email).matches()
-
                 }
             }
+
             val isPasswordValid by remember {
                 derivedStateOf {
                     password.length > 7
@@ -100,22 +79,15 @@ fun LoginScreen(
             var isPasswordVisible by remember {
                 mutableStateOf(false)
             }
+
             Text(
-                text = "Welcome Back...",
-                fontFamily = FontFamily.SansSerif,
+                text = "LogIn",
+                fontFamily = FontFamily.Cursive,
                 fontStyle = FontStyle.Italic,
                 fontWeight = FontWeight.ExtraBold,
-                fontSize = 32.sp,
+                fontSize = 50.sp,
 
                 )
-            Text(
-                text = "... to world of enjoyment",
-                fontFamily = FontFamily.SansSerif,
-                fontStyle = FontStyle.Italic,
-                fontWeight = FontWeight.ExtraBold,
-                fontSize = 20.sp
-            )
-
             OutlinedTextField(
                 value = email,
                 onValueChange = { email = it },
@@ -146,7 +118,7 @@ fun LoginScreen(
                         }
                     }
                 },
-                singleLine = true
+                singleLine = true,
             )
             OutlinedTextField(
                 value = password,
@@ -172,9 +144,8 @@ fun LoginScreen(
                     IconButton(
                         onClick = { isPasswordVisible = !isPasswordVisible }) {
                         Icon(
-                            painter = if (isPasswordVisible) painterResource(id = R.drawable.visibility) else painterResource(
-                                id = R.drawable.visibility_off
-                            ),
+                            imageVector = if (isPasswordVisible) Icons.Default.Visibility
+                            else Icons.Default.VisibilityOff,
                             contentDescription = "Toggle password Visibility"
                         )
                     }
@@ -184,27 +155,26 @@ fun LoginScreen(
                 horizontalArrangement = Arrangement.End,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                TextButton(
-                    onClick = {
+                Text(
+                    text = "Forgotten Password?",
+                    modifier = Modifier
+                        .clickable {
 
-                    },
-                ) {
-                    Text(
-                        text = "Forgotten Password?"
-                    )
-                }
+                        },
+                    color = Color.Blue
+                )
             }
 
             Button(
                 onClick = {
-                    viewModel.signIn(email, password)
+                    viewModel.login(email, password)
                 },
                 enabled = isEmailValid && isPasswordValid,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(8.dp)
                     .clip(CircleShape),
-                colors = ButtonDefaults.buttonColors(backgroundColor = DarkGreen10)
+                colors = ButtonDefaults.buttonColors(contentColor = Color.Green)
             ) {
                 Text(
                     text = "Login",
@@ -212,24 +182,13 @@ fun LoginScreen(
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold
                 )
-                when (val result = viewModel.signInState.value) {
-                    is Resource.Error -> {
-                        Toast.makeText(context, result.message, Toast.LENGTH_SHORT).show()
-                    }
-                    is Resource.Loading -> {
-                        CircularProgressIndicator(
-                            modifier = Modifier
-                                .size(14.dp)
-                                .border(
-                                    shape = MaterialTheme.shapes.medium,
-                                    color = Violet30,
-                                    width = 4.dp
-                                )
-                                .fillMaxSize()
-                        )
-                    }
+            }
+
+            loginFlow.value.let {
+                when (it) {
                     is Resource.Success -> {
-                        if (result.data==true) {
+                        LaunchedEffect(Unit) {
+                            navController.popBackStack()
                             navController.navigate(Screens.HomeScreen.route) {
                                 popUpTo(Screens.LoginScreen.route) {
                                     inclusive = true
@@ -237,9 +196,25 @@ fun LoginScreen(
                             }
                         }
                     }
+                    is Resource.Loading -> {
+                        CircularProgressIndicator(
+                            modifier = Modifier
+                                .size(20.dp)
+                                .border(
+                                    shape = MaterialTheme.shapes.medium,
+                                    color = MaterialTheme.colors.primary,
+                                    width = 2.dp
+                                )
+                        )
+                    }
+                    is Resource.Error -> {
+                        Toast.makeText(context, it.message, Toast.LENGTH_LONG).show()
+                    }
+                    else -> {
+
+                    }
                 }
             }
-
 
 
             Row(
@@ -249,7 +224,9 @@ fun LoginScreen(
                 TextButton(
                     onClick = {
                         navController.navigate(Screens.SignUpScreen.route) {
-                            launchSingleTop = true
+                            popUpTo(Screens.LoginScreen.route) {
+                                inclusive = true
+                            }
                         }
                     },
                 ) {

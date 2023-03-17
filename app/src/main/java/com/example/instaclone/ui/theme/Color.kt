@@ -43,7 +43,7 @@ val Grey90 = Color(0xFFE0E3E3)
 val Grey95 = Color(0xFFEFF1F1)
 val Grey99 = Color(0xFFFBFDFD)
 
-val primaryColor = Color(0xFF7848B6)
+val lighBlue = Color(0xFF5D5DE4)
 val whiteBackground = Color(0xFFF7F7F7)
 val White20 = Color(0x66FFFFFF)
 
@@ -55,9 +55,10 @@ val GreenGrey90 = Color(0xFFdcefe4)
 
 
 
-val blue = Color(0xFF5851DB)
-val urlColor = Color(0xFF3D3D91)
-val orange = Color(0xFFF56040)
-val yellow = Color(0xFFFCAF45)
+val blue = Color(0xFF4F5BD5)
+val orange = Color(0xFFFA7E1E)
+val pink = Color(0xFFD62976)
+val purple = Color(0xFF962FBF)
+val lightYellow = Color(0xFFFEDA75)
 
-val instagramGradient = listOf(blue, Purple500, orange, yellow)
+val instagramGradient = listOf(lightYellow,orange, pink, purple,blue)

@@ -11,5 +11,6 @@ data class User(
     var followers: List<String> = emptyList(),
     var totalPost: String = "",
     var url: String = "",
+    var webUrl: String = "",
     var bio: String = "",
 )

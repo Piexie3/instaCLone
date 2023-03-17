@@ -2,6 +2,7 @@ package com.example.instaclone.feature_user.data.repository
 
 import com.example.instaclone.core.utils.Constans
 import com.example.instaclone.core.utils.Resource
+import com.example.instaclone.feature_auth.domain.repository.AuthRepository
 import com.example.instaclone.feature_user.domain.models.User
 import com.example.instaclone.feature_user.domain.repository.UserRepository
 import com.google.firebase.firestore.FirebaseFirestore
@@ -14,8 +15,10 @@ import javax.inject.Inject
 
 class UserRepositoryImpl @Inject constructor(
     private val firebaseFirestore: FirebaseFirestore,
-    private var operationalSuccessful: Boolean = false
+   authRepository: AuthRepository
 ): UserRepository {
+    private var operationalSuccessful: Boolean = false
+    val userId = authRepository.currentUser!!.uid
     override fun getUserDetails(userId: String): Flow<Resource<User?>> = callbackFlow{
        Resource.Loading(true)
         val snapshotListener = firebaseFirestore.collection(Constans.COLLECTION_NAME_USERS)
@@ -35,12 +38,11 @@ class UserRepositoryImpl @Inject constructor(
     }
 
     override fun setUserDetails(
-        userId: String,
         name: String,
         userName: String,
         bio: String,
-        webUrl: String
-    ): Flow<Resource<Boolean>> = flow{
+        webUrl: String,
+        ): Flow<Resource<Boolean>> = flow{
         operationalSuccessful = false
         try {
             val userObj = mutableMapOf<String,String>()

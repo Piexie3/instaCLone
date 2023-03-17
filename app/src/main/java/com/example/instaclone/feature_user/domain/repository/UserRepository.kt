@@ -8,10 +8,9 @@ interface UserRepository {
 
     fun getUserDetails(userId: String): Flow<Resource<User?>>
     fun setUserDetails(
-        userId: String,
         name: String,
         userName: String,
         bio: String,
-        webUrl:String
+        webUrl:String,
     ): Flow<Resource<Boolean>>
 }

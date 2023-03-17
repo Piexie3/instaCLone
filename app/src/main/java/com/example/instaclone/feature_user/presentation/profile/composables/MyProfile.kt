@@ -8,7 +8,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.instaclone.ui.theme.urlColor
+import com.example.instaclone.ui.theme.blue
 
 @Composable
 fun MyProfile(
@@ -35,7 +35,7 @@ fun MyProfile(
         Text(
             text = url,
             lineHeight = 20.sp,
-            color = urlColor,
+            color = blue,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )

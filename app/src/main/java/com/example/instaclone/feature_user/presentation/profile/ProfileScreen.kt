@@ -27,6 +27,7 @@ import com.example.instaclone.R
 import com.example.instaclone.core.utils.Resource
 import com.example.instaclone.feature_user.domain.models.TabModel
 import com.example.instaclone.feature_user.presentation.profile.composables.*
+import com.example.instaclone.navigation.BottomNavItem
 import com.example.instaclone.navigation.BottomNavMenu
 
 @Composable
@@ -80,7 +81,7 @@ fun ProfileScreen(
                         )
                     }
                 },
-                backgroundColor = MaterialTheme.colors.background.copy(0.7f)
+                backgroundColor = Color.Transparent
 
             )
         },
@@ -90,7 +91,7 @@ fun ProfileScreen(
                 backgroundColor = Color.Black,
                 cutoutShape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)
             ) {
-                BottomNavMenu(selectedItem = null, navController = navController)
+                BottomNavMenu(selectedItem = BottomNavItem.PROFILE, navController = navController)
             }
         }
     ) { paddingValues ->
@@ -117,12 +118,11 @@ fun ProfileScreen(
                     if (obj != null) {
                         RoundedCornerImage(
                             image = obj.imageUrl,
-                            modifier = Modifier
-                                .size(100.dp)
-                                .weight(3.5f)
-                        )
+                        ){
+
+                        }
                     }
-                    Spacer(modifier = Modifier.width(10.dp))
+                    Spacer(modifier = Modifier.width(4.dp))
                     StatSection()
                 }
             }
@@ -168,11 +168,10 @@ fun ProfileScreen(
                         image = painterResource(id = R.drawable.ic_person),
                         text = "Contacts share"
                     )
-                ),
-                onTabSelected = {
-                    selectedTabIndex = it
-                }
-            )
+                )
+            ){
+                selectedTabIndex = it
+            }
             when (selectedTabIndex) {
                 0 -> PostSection(
                     posts = listOf(
@@ -197,19 +196,4 @@ fun ProfileScreen(
             }
         }
     }
-
-//    when (val result = userViewModel.getUserData.value) {
-//        is Resource.Loading -> {
-//
-//        }
-//        is Resource.Success -> {
-//            Log.d("successful", result.toString())
-//            if (result.data != null) {
-//
-//            }
-//        }
-//        is Resource.Error -> {
-//            Toast.makeText(LocalContext.current, result.message, Toast.LENGTH_SHORT).show()
-//        }
-//    }
 }

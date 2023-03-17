@@ -17,7 +17,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.instaclone.R
-import com.example.instaclone.feature_auth.presentation.AuthViewModel
+import com.example.instaclone.feature_auth.presentation.viewModel.AuthViewModel
 import com.example.instaclone.navigation.Screens
 
 @Composable
@@ -48,9 +48,9 @@ fun SplashScreen(
             )
         )
         if (authValue) {
-            navController.navigate(Screens.LoginScreen.route)
-        } else {
             navController.navigate(Screens.HomeScreen.route)
+        } else {
+            navController.navigate(Screens.LoginScreen.route)
         }
     }
 }

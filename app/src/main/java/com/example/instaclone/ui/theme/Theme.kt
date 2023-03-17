@@ -18,7 +18,6 @@ private val DarkColorPalette = darkColors(
     onBackground = Grey90,
     surface = GreenGrey30,
     onSurface = GreenGrey80,
-
     )
 
 private val LightColorPalette = lightColors(

@@ -16,19 +16,19 @@ import javax.inject.Inject
 class UserViewModel @Inject constructor(
     private val auth: FirebaseAuth,
     private val userUseCases: UserUseCases
-):ViewModel(){
+) : ViewModel() {
 
     private val userId = auth.currentUser?.uid
     private val _getUserData = mutableStateOf<Resource<User?>>(Resource.Success(null))
-    val getUserData : State<Resource<User?>> = _getUserData
+    val getUserData: State<Resource<User?>> = _getUserData
 
     private val _setUserData = mutableStateOf<Resource<Boolean>>(Resource.Success(false))
-    val setUserData : State<Resource<Boolean>> = _setUserData
+    val setUserData: State<Resource<Boolean>> = _setUserData
 
-    fun getUserInfo(){
-        if (userId != null){
+    fun getUserInfo() {
+        if (userId != null) {
             viewModelScope.launch {
-                userUseCases.getUserDetailsUseCase(userId= userId).collect{
+                userUseCases.getUserDetailsUseCase(userId = userId).collect {
                     _getUserData.value = it
                 }
             }
@@ -36,15 +36,20 @@ class UserViewModel @Inject constructor(
     }
 
     fun setUserInfo(
-        userId: String,
         name: String,
         userName: String,
         bio: String,
-        webUrl:String
-    ){
+        webUrl: String,
+        ) {
         viewModelScope.launch {
-            userUseCases.setUserDetailsUseCase(name, userName, bio, webUrl,userId)
-                .collect{
+            userUseCases.setUserDetailsUseCase(
+                name = name,
+                userName = userName,
+                bio = bio,
+                webUrl = webUrl,
+
+            )
+                .collect {
                     _setUserData.value = it
                 }
         }

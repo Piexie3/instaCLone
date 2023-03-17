@@ -7,10 +7,9 @@ class SetUserDetailsUseCase @Inject constructor(
     private val repository: UserRepository
 ) {
     operator fun invoke(
-        userId: String,
         name: String,
         userName: String,
         bio: String,
         webUrl:String
-    ) = repository.setUserDetails(userId,name, userName, bio, webUrl)
+    ) = repository.setUserDetails(name, userName, bio, webUrl)
 }

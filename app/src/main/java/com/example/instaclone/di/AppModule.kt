@@ -77,8 +77,8 @@ class AppModule {
     }
     @Provides
     @Singleton
-    fun providesPostRepository(fireStore: FirebaseFirestore): PostRepository{
-        return PostRepositoryImpl(fireStore)
+    fun providesPostRepository(fireStore: FirebaseFirestore,authRepository: AuthRepository): PostRepository{
+        return PostRepositoryImpl(fireStore,authRepository)
     }
 
     @Provides

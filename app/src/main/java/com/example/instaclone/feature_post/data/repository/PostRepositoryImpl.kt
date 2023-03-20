@@ -2,6 +2,7 @@ package com.example.instaclone.feature_post.data.repository
 
 import com.example.instaclone.core.utils.Constans
 import com.example.instaclone.core.utils.Resource
+import com.example.instaclone.feature_auth.domain.repository.AuthRepository
 import com.example.instaclone.feature_post.domain.models.Post
 import com.example.instaclone.feature_post.domain.repository.PostRepository
 import com.google.firebase.firestore.FirebaseFirestore
@@ -13,10 +14,13 @@ import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 class PostRepositoryImpl @Inject constructor(
-    private val firestore: FirebaseFirestore
+    private val firestore: FirebaseFirestore,
+    authRepository: AuthRepository
 ) : PostRepository {
     private var operationSuccessful = false
-    override fun getAllPosts(userId: String): Flow<Resource<List<Post>>> = callbackFlow {
+
+    val userId = authRepository.currentUser!!.uid
+    override fun getAllPosts(): Flow<Resource<List<Post>>> = callbackFlow {
         Resource.Loading(true)
         val snapshotListener = firestore.collection(Constans.COLLECTION_NAME_POSTS)
             .whereNotEqualTo("userId", userId)
@@ -38,7 +42,6 @@ class PostRepositoryImpl @Inject constructor(
         postImage: String,
         postDescription: String,
         time: Long,
-        userId: String,
         userName: String,
         userImage: String
     ): Flow<Resource<Boolean>> = flow {
@@ -48,7 +51,12 @@ class PostRepositoryImpl @Inject constructor(
                 .document()
                 .id
             val post = Post(
-                postId, postImage, postDescription, userId, userImage, userName, time
+                postId = postId,
+                postImage = postImage,
+                postDescription = postDescription,
+                userImage=userImage,
+                userName = userName,
+                time = time
             )
             firestore.collection(Constans.COLLECTION_NAME_POSTS)
                 .document(postId)
@@ -56,10 +64,9 @@ class PostRepositoryImpl @Inject constructor(
                 .addOnSuccessListener {
                     operationSuccessful = true
                 }.await()
-            if (operationSuccessful){
+            if (operationSuccessful) {
                 Resource.Success(operationSuccessful)
-            }
-            else{
+            } else {
                 emit(Resource.Error("Post upload unsuccessful"))
             }
         } catch (e: Exception) {

@@ -7,7 +7,7 @@ import androidx.compose.foundation.background
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.ui.Modifier
-import com.example.instaclone.navigation.NavGraph
+import com.example.instaclone.feature_post.presentation.upload_sample.UploadImage
 import com.example.instaclone.ui.theme.InstaCloneTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -21,7 +21,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier
                         .background(MaterialTheme.colors.background)
                 ) {
-                    NavGraph()
+                    UploadImage()
                 }
             }
         }

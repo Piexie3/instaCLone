@@ -22,9 +22,9 @@ class PostViewModel @Inject constructor(
     private val _uploadPostData = mutableStateOf<Resource<Boolean>>(Resource.Success(false))
     val uploadPostData : State<Resource<Boolean>> = _uploadPostData
 
-    fun getAllPosts(userId: String){
+    fun getAllPosts(){
         viewModelScope.launch {
-            postUseCases.getAllPostsUseCases(userId).collect{
+            postUseCases.getAllPostsUseCases().collect{
                 _postData.value = it
             }
         }
@@ -33,12 +33,11 @@ class PostViewModel @Inject constructor(
         postImage: String,
         postDescription: String,
         time: Long,
-        userId: String,
         userName: String,
         userImage: String
     ){
         viewModelScope.launch {
-            postUseCases.uploadPostUseCase(postImage, postDescription, time, userId, userName, userImage).collect{
+            postUseCases.uploadPostUseCase(postImage=postImage, postDescription = postDescription, time=time, userName=userName, userImage=userImage).collect{
                 _uploadPostData.value = it
             }
         }

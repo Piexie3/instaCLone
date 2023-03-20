@@ -6,5 +6,5 @@ import javax.inject.Inject
 class GetAllPostsUseCases @Inject constructor(
     private val repository: PostRepository
 ) {
-    operator fun invoke(userId:String) = repository.getAllPosts(userId)
+    operator fun invoke() = repository.getAllPosts()
 }

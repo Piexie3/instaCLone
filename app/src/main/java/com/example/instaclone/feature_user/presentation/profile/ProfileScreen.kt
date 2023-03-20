@@ -125,7 +125,7 @@ fun ProfileScreen(
                 MyProfile(
                     displayName = obj.name,
                     bio = obj.bio,
-                    url = obj.url
+                    url = obj.webUrl
                 )
             }
             Spacer(modifier = Modifier.height(20.dp))
@@ -133,16 +133,17 @@ fun ProfileScreen(
                 horizontalArrangement = Arrangement.spacedBy(190.dp),
                 modifier = Modifier.padding(horizontal = 20.dp)
             ) {
-                ActionButton(
-                    text = "Edit Profile",
+                Button(
+                    onClick = { /*TODO*/ },
                     modifier = Modifier
                         .fillMaxWidth()
                         .weight(0.45f)
                         .height(35.dp)
-                        .clickable {
-
-                        }
-                )
+                ) {
+                 Text(
+                     text = "Edit Profile"
+                 )
+                }
             }
             Spacer(modifier = Modifier.height(15.dp))
             TabView(
@@ -167,28 +168,28 @@ fun ProfileScreen(
             ){
                 selectedTabIndex = it
             }
-            when (selectedTabIndex) {
-                0 -> PostSection(
-                    posts = listOf(
-                        painterResource(id = R.drawable.post2),
-                        painterResource(id = R.drawable.post),
-                        painterResource(id = R.drawable.img_2),
-                        painterResource(id = R.drawable.img_2),
-                        painterResource(id = R.drawable.profile_image),
-                        painterResource(id = R.drawable.img_2),
-                        painterResource(id = R.drawable.profile_image),
-                        painterResource(id = R.drawable.img_2),
-                        painterResource(id = R.drawable.post),
-                    ),
-                    modifier = Modifier.fillMaxWidth().padding(5.dp)
-                )
-                1->{
-
-                }
-                2->{
-
-                }
-            }
+//            when (selectedTabIndex) {
+//                0 -> PostSection(
+//                    posts = listOf(
+//                        painterResource(id = R.drawable.post2),
+//                        painterResource(id = R.drawable.post),
+//                        painterResource(id = R.drawable.img_2),
+//                        painterResource(id = R.drawable.img_2),
+//                        painterResource(id = R.drawable.profile_image),
+//                        painterResource(id = R.drawable.img_2),
+//                        painterResource(id = R.drawable.profile_image),
+//                        painterResource(id = R.drawable.img_2),
+//                        painterResource(id = R.drawable.post),
+//                    ),
+//                    modifier = Modifier.fillMaxWidth().padding(5.dp)
+//                )
+//                1->{
+//
+//                }
+//                2->{
+//
+//                }
+//            }
         }
     }
 }

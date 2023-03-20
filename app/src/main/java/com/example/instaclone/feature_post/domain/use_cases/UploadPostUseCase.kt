@@ -5,13 +5,18 @@ import javax.inject.Inject
 
 class UploadPostUseCase @Inject constructor(
     private val repository: PostRepository
-)  {
+) {
     operator fun invoke(
         postImage: String,
         postDescription: String,
         time: Long,
-        userId: String,
         userName: String,
         userImage: String
-    )= repository.uploadPost(postImage, postDescription, time, userId, userName, userImage)
+    ) = repository.uploadPost(
+        postImage = postImage,
+        postDescription = postDescription,
+        time = time,
+        userName = userName,
+        userImage = userImage
+    )
 }

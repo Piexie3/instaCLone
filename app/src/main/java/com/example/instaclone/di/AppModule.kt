@@ -46,7 +46,7 @@ class AppModule {
     @Provides
     @Singleton
     fun providesAuthRepository(auth: FirebaseAuth, fireStore: FirebaseFirestore): AuthRepository {
-        return AuthRepositoryImpl(auth,fireStore)
+        return AuthRepositoryImpl(auth, fireStore)
     }
 
     @Provides
@@ -63,27 +63,34 @@ class AppModule {
 
     @Provides
     @Singleton
-    fun providesUserRepository(fireStore: FirebaseFirestore,authRepository: AuthRepository): UserRepository{
+    fun providesUserRepository(
+        fireStore: FirebaseFirestore,
+        authRepository: AuthRepository
+    ): UserRepository {
         return UserRepositoryImpl(fireStore, authRepository)
     }
 
     @Provides
     @Singleton
-    fun providesUserUseCases(repository: UserRepository): UserUseCases{
+    fun providesUserUseCases(repository: UserRepository): UserUseCases {
         return UserUseCases(
             getUserDetailsUseCase = GetUserDetailsUseCase(repository),
             setUserDetailsUseCase = SetUserDetailsUseCase(repository)
         )
     }
+
     @Provides
     @Singleton
-    fun providesPostRepository(fireStore: FirebaseFirestore,authRepository: AuthRepository): PostRepository{
-        return PostRepositoryImpl(fireStore,authRepository)
+    fun providesPostRepository(
+        fireStore: FirebaseFirestore,
+        authRepository: AuthRepository
+    ): PostRepository {
+        return PostRepositoryImpl(fireStore, authRepository)
     }
 
     @Provides
     @Singleton
-    fun providesPostUseCases(repository: PostRepository): PostUseCases{
+    fun providesPostUseCases(repository: PostRepository): PostUseCases {
         return PostUseCases(
             getAllPostsUseCases = GetAllPostsUseCases(repository),
             uploadPostUseCase = UploadPostUseCase(repository)

@@ -20,10 +20,12 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.instaclone.R
+import com.example.instaclone.core.utils.Resource
 import com.example.instaclone.feature_user.domain.models.TabModel
 import com.example.instaclone.feature_user.presentation.profile.composables.*
 import com.example.instaclone.navigation.BottomNavItem
 import com.example.instaclone.navigation.BottomNavMenu
+import com.example.instaclone.navigation.Screens
 
 @Composable
 fun ProfileScreen(
@@ -33,6 +35,17 @@ fun ProfileScreen(
     userViewModel.getUserInfo()
     val result = userViewModel.getUserData.value
     val obj = result.data
+//    when(userViewModel.setUserData.value){
+//        is Resource.Success->{
+//
+//        }
+//        is Resource.Loading->{
+//
+//        }
+//        is Resource.Error->{
+//
+//        }
+//    }
     var selectedTabIndex by remember {
         mutableStateOf(0)
     }
@@ -58,7 +71,9 @@ fun ProfileScreen(
                 actions = {
                     IconButton(
                         modifier = Modifier.clip(CircleShape),
-                        onClick = { /*TODO*/ }) {
+                        onClick = {
+                            navController.navigate(Screens.AddPostScreen.route)
+                        }) {
                         Icon(
                             painter = painterResource(id = R.drawable.add),
                             contentDescription = "create",

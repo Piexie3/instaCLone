@@ -1,4 +1,4 @@
-package com.example.instaclone.feature_post.presentation.upload_sample
+package com.example.instaclone.feature_user.presentation.profile
 
 import android.content.Context
 import android.net.Uri
@@ -11,30 +11,26 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.instaclone.R
-import com.example.instaclone.feature_post.presentation.post.PostViewModel
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import java.io.ByteArrayOutputStream
+import java.util.UUID
 
 @Composable
-fun UploadImage(
-    postViewModel: PostViewModel = hiltViewModel()
-) {
-    val uploaddata = postViewModel.uploadPostData.value
+fun AddPostScreen() {
     var imageUri by remember { mutableStateOf<Uri?>(null) }
     val context = LocalContext.current
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent(),
         onResult = { imageUri = it }
     )
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -43,6 +39,13 @@ fun UploadImage(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
+        Column(
+            modifier = Modifier
+                .fillMaxSize(.8f)
+                .fillMaxWidth(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             if (imageUri != null) {
                 AsyncImage(
                     model = ImageRequest.Builder(context)
@@ -54,27 +57,30 @@ fun UploadImage(
                     contentDescription = "Selected Image",
                     modifier = Modifier
                         .fillMaxWidth()
+                        .padding(bottom = 16.dp),
+                    contentScale = ContentScale.Fit
+                )
+            } else {
+                Image(
+                    painter = painterResource(id = R.drawable.post),
+                    contentDescription = "Select Image",
+                    modifier = Modifier
+                        .fillMaxWidth()
                         .padding(bottom = 16.dp)
                 )
             }
-        else {
-            Image(
-                painter = painterResource(id = R.drawable.post),
-                contentDescription = "Select Image",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 16.dp)
-            )
         }
-
 
         if (imageUri != null) {
             Button(
                 onClick = { uploadImageToFirebase(context, imageUri!!) }) {
                 Text("Upload Image")
             }
-        }else{
-            Button(onClick = { launcher.launch("image/*") }) {
+        } else {
+            Button(
+                onClick = {
+                    launcher.launch("image/*")
+                }) {
                 Text("Select Image")
             }
         }
@@ -83,7 +89,7 @@ fun UploadImage(
 
 private fun uploadImageToFirebase(context: Context, imageUri: Uri) {
     val storageRef = Firebase.storage.reference
-    val imagesRef = storageRef.child("images/${imageUri.lastPathSegment}")
+    val imagesRef = storageRef.child("images/${UUID.randomUUID()}")
     val inputStream = context.contentResolver.openInputStream(imageUri)
     val buffer = ByteArrayOutputStream()
 

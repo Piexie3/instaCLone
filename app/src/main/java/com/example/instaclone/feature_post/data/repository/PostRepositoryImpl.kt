@@ -19,11 +19,20 @@ class PostRepositoryImpl @Inject constructor(
 ) : PostRepository {
     private var operationSuccessful = false
 
-    val userId = authRepository.currentUser!!.uid
+    private val userId = authRepository.currentUser!!.uid
     override fun getAllPosts(): Flow<Resource<List<Post>>> = callbackFlow {
         Resource.Loading(true)
         val snapshotListener = firestore.collection(Constans.COLLECTION_NAME_POSTS)
             .whereNotEqualTo("userId", userId)
+//        snapshotListener.get().addOnSuccessListener {
+//            operationSuccessful =true
+//                val doc = it.documents
+//                if (doc.isNotEmpty()){
+//                    Log.d("Document", doc.toString())
+//                }else{
+//                    Log.d("Document", "No data")
+//                }
+//        }
             .addSnapshotListener { snapshot, error ->
                 val result = if (snapshot != null) {
                     val postList = snapshot.toObjects(Post::class.java)
@@ -54,7 +63,7 @@ class PostRepositoryImpl @Inject constructor(
                 postId = postId,
                 postImage = postImage,
                 postDescription = postDescription,
-                userImage=userImage,
+                userImage = userImage,
                 userName = userName,
                 time = time
             )

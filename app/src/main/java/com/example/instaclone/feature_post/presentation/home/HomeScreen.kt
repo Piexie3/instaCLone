@@ -18,6 +18,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -25,9 +26,10 @@ import androidx.navigation.NavController
 import com.example.instaclone.R
 import com.example.instaclone.core.composables.CircularImage
 import com.example.instaclone.feature_post.presentation.home.composables.PostCard
-import com.example.instaclone.feature_post.presentation.post.PostViewModel
+import com.example.instaclone.feature_user.presentation.profile.UserViewModel
 import com.example.instaclone.navigation.BottomNavItem
 import com.example.instaclone.navigation.BottomNavMenu
+import com.example.instaclone.navigation.Screens
 import com.example.instaclone.ui.theme.lighBlue
 import kotlin.random.Random
 
@@ -35,7 +37,9 @@ import kotlin.random.Random
 fun HomeScreen(
     navController: NavController
 ) {
-    val postViewModel: PostViewModel = hiltViewModel()
+    val userViewModel: UserViewModel = hiltViewModel()
+    val result = userViewModel.getUserData.value
+    val obj = result.data
     val link2 =
         "https://www.vibe.com/wp-content/uploads/2017/09/XXXTentacion-mugshot-orange-county-jail-1504911983-640x5601-1505432825.jpg?w=640&h=511&crop=1"
     Scaffold(
@@ -46,13 +50,14 @@ fun HomeScreen(
                         modifier = Modifier.clickable {
 
                         },
-                        verticalAlignment = Alignment.CenterVertically,
+                        verticalAlignment = Alignment.Bottom,
                         horizontalArrangement = Arrangement.Center
                     ) {
                         Text(
                             text = "Instagram",
+                            fontWeight = FontWeight.Bold,
+                            fontStyle = FontStyle.Italic,
                             fontFamily = FontFamily.Cursive,
-                            fontWeight = FontWeight.ExtraBold,
                             style = MaterialTheme.typography.h4,
                         )
                         Icon(
@@ -99,14 +104,22 @@ fun HomeScreen(
                 )
                 .padding(top = 5.dp)
         ) {
-            Stories(userImage = link2)
-            Spacer(modifier = Modifier.height(8.dp))
             LazyColumn() {
+                item{
+                    Stories(userImage = link2, userName = "Bett"){
+                        navController.navigate(Screens.StoryScreen.route)
+                    }
+                }
+                item{
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
                 items(100) {
+
                     PostCard(
                         profileImage = link2,
                         postImage = "https://picsum.photos/seed/${Random.nextInt()}/300/200"
                     )
+
                 }
             }
         }
@@ -115,55 +128,77 @@ fun HomeScreen(
 
 @Composable
 fun Stories(
-    userImage: String
+    userImage: String,
+    userName: String,
+    navController: () -> Unit
 ) {
     Spacer(modifier = Modifier.width(5.dp))
     LazyRow(
-        modifier = Modifier.padding(vertical = 5.dp)
+        modifier = Modifier.padding(vertical = 5.dp, horizontal = 10.dp)
     ) {
         items(100) {
             if (it == 0) {
-                Box(contentAlignment = Alignment.Center) {
-                    CircularImage(
-                        onClicked = { /*TODO*/ },
-                        userImage = userImage,
-                        modifier = Modifier.size(70.dp)
-                    )
-                    Box(
-                        contentAlignment = Alignment.Center,
-                        modifier = Modifier
-                            .background(
-                                MaterialTheme.colors.background,
-                                shape = CircleShape
-                            )
-                            .align(
-                                Alignment.BottomEnd
-                            )
-                            .size(23.dp)
-                    ) {
-                        IconButton(
-                            onClick = { /*TODO*/ },
+                Column(
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.wrapContentSize()
+                ) {
+                    Box(contentAlignment = Alignment.Center) {
+
+                        CircularImage(
+                            onClicked = { /*TODO*/ },
+                            userImage = userImage,
+                            modifier = Modifier.size(70.dp)
+                        )
+                        Box(
+                            contentAlignment = Alignment.Center,
                             modifier = Modifier
-                                .padding(4.dp)
-                                .background(lighBlue, CircleShape)
-                                .clip(
-                                    CircleShape
-                                ),
+                                .background(
+                                    MaterialTheme.colors.background,
+                                    shape = CircleShape
+                                )
+                                .align(
+                                    Alignment.BottomEnd
+                                )
+                                .size(23.dp)
                         ) {
-                            Icon(
-                                imageVector = Icons.Default.Add,
-                                contentDescription = "add stories"
-                            )
+                            IconButton(
+                                onClick = { /*TODO*/ },
+                                modifier = Modifier
+                                    .padding(4.dp)
+                                    .background(lighBlue, CircleShape)
+                                    .clip(
+                                        CircleShape
+                                    ),
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Add,
+                                    contentDescription = "add stories"
+                                )
+                            }
                         }
+
                     }
+                    Text(
+                        text = "your story"
+                    )
                 }
                 Spacer(modifier = Modifier.width(5.dp))
             } else {
-                CircularImage(
-                    onClicked = { /*TODO*/ },
-                    userImage = "https://picsum.photos/seed/${Random.nextInt()}/300/200",
-                    modifier = Modifier.size(70.dp)
-                )
+                Column(
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.wrapContentSize()
+                ) {
+                    CircularImage(
+                        onClicked = {
+                                    navController()
+                                    },
+                        userImage = "https://picsum.photos/seed/${Random.nextInt()}/300/200",
+                        modifier = Modifier.size(70.dp)
+                    )
+                    Text(text = userName)
+                }
                 Spacer(modifier = Modifier.width(5.dp))
             }
         }

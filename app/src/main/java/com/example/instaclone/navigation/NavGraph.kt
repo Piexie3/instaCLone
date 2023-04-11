@@ -8,11 +8,12 @@ import androidx.navigation.compose.rememberNavController
 import com.example.instaclone.feature_auth.presentation.login.LoginScreen
 import com.example.instaclone.feature_auth.presentation.signup.SignUpScreen
 import com.example.instaclone.feature_post.presentation.home.HomeScreen
+import com.example.instaclone.feature_post.presentation.home.composables.stories.StoryScreen
+import com.example.instaclone.feature_user.presentation.profile.AddPostScreen
 import com.example.instaclone.feature_user.presentation.profile.ProfileScreen
 import com.example.instaclone.feature_user.presentation.reels.ReelsScreen
 import com.example.instaclone.feature_user.presentation.search.SearchScreen
 import com.example.instaclone.feature_user.presentation.shopping.ShoppingScreen
-import com.example.instaclone.feature_user.presentation.splash.SplashScreen
 
 
 @Composable
@@ -45,9 +46,16 @@ fun NavGraph(
         composable(route = Screens.ProfileScreen.route) {
             ProfileScreen(navController)
         }
+        composable(route = Screens.StoryScreen.route) {
+            StoryScreen(navController)
+        }
+        composable(route = Screens.AddPostScreen.route) {
+            AddPostScreen()
+        }
 //        composable(route = Screens.SplashScreen.route) {
 //            SplashScreen(navController)
 //        }
+
     }
 
 }

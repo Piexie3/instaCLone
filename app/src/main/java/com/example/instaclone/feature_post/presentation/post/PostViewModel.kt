@@ -8,36 +8,42 @@ import com.example.instaclone.core.utils.Resource
 import com.example.instaclone.feature_post.domain.models.Post
 import com.example.instaclone.feature_post.domain.use_cases.PostUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class PostViewModel @Inject constructor(
     private val postUseCases: PostUseCases,
-): ViewModel() {
+) : ViewModel() {
     private val _postData = mutableStateOf<Resource<List<Post>>>(Resource.Loading())
-    val postData : State<Resource<List<Post>>> = _postData
+    val postData: State<Resource<List<Post>>> = _postData
 
     private val _uploadPostData = mutableStateOf<Resource<Boolean>>(Resource.Success(false))
-    val uploadPostData : State<Resource<Boolean>> = _uploadPostData
+    val uploadPostData: State<Resource<Boolean>> = _uploadPostData
 
-    fun getAllPosts(){
+    fun getAllPosts() {
         viewModelScope.launch {
-            postUseCases.getAllPostsUseCases().collect{
+            postUseCases.getAllPostsUseCases().collect {
                 _postData.value = it
             }
         }
     }
+
     fun uploadPost(
         postImage: String,
         postDescription: String,
         time: Long,
         userName: String,
         userImage: String
-    ){
+    ) {
         viewModelScope.launch {
-            postUseCases.uploadPostUseCase(postImage=postImage, postDescription = postDescription, time=time, userName=userName, userImage=userImage).collect{
+            postUseCases.uploadPostUseCase(
+                postImage = postImage,
+                postDescription = postDescription,
+                time = time,
+                userName = userName,
+                userImage = userImage
+            ).collect {
                 _uploadPostData.value = it
             }
         }

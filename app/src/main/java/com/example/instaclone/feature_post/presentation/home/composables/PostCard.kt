@@ -42,7 +42,8 @@ import com.example.instaclone.R
 fun PostCard(
     profileImage: String,
     postImage: String,
-
+    userName: String,
+    postDescription: String
 ) {
     Column {
         Row(
@@ -107,13 +108,13 @@ fun PostCard(
                 Spacer(modifier = Modifier.width(10.dp))
                 Column(verticalArrangement = Arrangement.Center) {
                     Text(
-                        text = "name",
+                        text = userName,
                         fontWeight = FontWeight.Bold,
                         style = MaterialTheme.typography.body1,
                         color = MaterialTheme.colors.onBackground
                     )
                     Text(
-                        text = "@Username",
+                        text = "@$userName",
                         fontWeight = FontWeight.Light,
                         style = MaterialTheme.typography.body1,
                         color = MaterialTheme.colors.onBackground
@@ -180,6 +181,11 @@ fun PostCard(
                 Icon(imageVector = Icons.Default.BookmarkAdd, contentDescription = "AddBookMark")
             }
         }
+        Text(
+            text = postDescription,
+            style = MaterialTheme.typography.body1,
+            fontWeight = FontWeight.SemiBold
+        )
         Spacer(modifier = Modifier.height(2.dp))
         Divider()
     }

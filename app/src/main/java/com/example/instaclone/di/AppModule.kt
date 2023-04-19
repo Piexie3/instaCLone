@@ -6,15 +6,15 @@ import com.example.instaclone.feature_auth.domain.use_cases.AuthUseCases
 import com.example.instaclone.feature_auth.domain.use_cases.IsUserAuthenticated
 import com.example.instaclone.feature_post.data.repository.PostRepositoryImpl
 import com.example.instaclone.feature_post.domain.repository.PostRepository
-import com.example.instaclone.feature_post.domain.use_cases.GetAllPostsUseCases
+import com.example.instaclone.feature_post.domain.use_cases.CreatePost
+import com.example.instaclone.feature_post.domain.use_cases.LoadPost
 import com.example.instaclone.feature_post.domain.use_cases.PostUseCases
 import com.example.instaclone.feature_post.domain.use_cases.UploadPostUseCase
 import com.example.instaclone.feature_user.data.repository.UserRepositoryImpl
 import com.example.instaclone.feature_user.domain.repository.UserRepository
-import com.example.instaclone.feature_user.domain.use_cases.user_use_cases.GetUserDetailsUseCase
-import com.example.instaclone.feature_user.domain.use_cases.user_use_cases.SetUserDetailsUseCase
-import com.example.instaclone.feature_user.domain.use_cases.user_use_cases.UserUseCases
+import com.example.instaclone.feature_user.domain.use_cases.*
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import dagger.Module
@@ -39,9 +39,16 @@ class AppModule {
 
     @Provides
     @Singleton
-    fun providesFirebaseFirestore(): FirebaseFirestore {
+    fun providesFirebaseDatabase(): FirebaseDatabase {
+        return FirebaseDatabase.getInstance()
+    }
+
+    @Provides
+    @Singleton
+    fun providesFirebaseFireStore(): FirebaseFirestore {
         return FirebaseFirestore.getInstance()
     }
+
 
     @Provides
     @Singleton
@@ -64,36 +71,47 @@ class AppModule {
     @Provides
     @Singleton
     fun providesUserRepository(
-        fireStore: FirebaseFirestore,
-        authRepository: AuthRepository
+        authRepository: AuthRepository,
+        database: FirebaseDatabase,
+        storage: FirebaseStorage
     ): UserRepository {
-        return UserRepositoryImpl(fireStore, authRepository)
+        return UserRepositoryImpl(authRepository, database, storage)
     }
 
-    @Provides
-    @Singleton
-    fun providesUserUseCases(repository: UserRepository): UserUseCases {
-        return UserUseCases(
-            getUserDetailsUseCase = GetUserDetailsUseCase(repository),
-            setUserDetailsUseCase = SetUserDetailsUseCase(repository)
-        )
-    }
 
     @Provides
     @Singleton
     fun providesPostRepository(
-        fireStore: FirebaseFirestore,
-        authRepository: AuthRepository
+        database: FirebaseDatabase,
+        auth: FirebaseAuth,
+        storage: FirebaseStorage,
+        authRepository: AuthRepository,
     ): PostRepository {
-        return PostRepositoryImpl(fireStore, authRepository)
+        return PostRepositoryImpl(
+            auth = auth,
+            database = database,
+            storage = storage,
+            authRepository = authRepository
+        )
     }
 
     @Provides
     @Singleton
     fun providesPostUseCases(repository: PostRepository): PostUseCases {
         return PostUseCases(
-            getAllPostsUseCases = GetAllPostsUseCases(repository),
-            uploadPostUseCase = UploadPostUseCase(repository)
+            createPost = CreatePost(repository),
+            uploadPost = UploadPostUseCase(repository),
+            loadPost = LoadPost(repository)
         )
     }
+
+    @Provides
+    fun provideProfileScreenUseCase(userRepository: UserRepository) =
+        ProfileScreenUseCases(
+            createOrUpdateProfileToFirebase = CreateOrUpdateProfileToFirebase(userRepository),
+            loadProfileFromFirebase = LoadProfileFromFirebase(userRepository),
+            setUserStatusToFirebase = SetUserStatusToFirebase(userRepository),
+            uploadPictureToFirebase = UploadPictureToFirebase(userRepository)
+        )
+
 }

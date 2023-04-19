@@ -1,11 +1,14 @@
 package com.example.instaclone.feature_post.presentation.post
 
-import androidx.compose.runtime.State
+import android.net.Uri
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.instaclone.core.utils.Resource
 import com.example.instaclone.feature_post.domain.models.Post
+import com.example.instaclone.feature_post.domain.models.PostRegister
 import com.example.instaclone.feature_post.domain.use_cases.PostUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -15,45 +18,78 @@ import javax.inject.Inject
 class PostViewModel @Inject constructor(
     private val postUseCases: PostUseCases,
 ) : ViewModel() {
-    private val _postData = mutableStateOf<Resource<List<Post>>>(Resource.Loading())
-    val postData: State<Resource<List<Post>>> = _postData
+    var toastMessage = mutableStateOf("")
+        private set
+    var isLoading = mutableStateOf(false)
+        private set
+    var post: List<PostRegister> by mutableStateOf(listOf())
+        private set
+    var postDataStateFromFirebase = mutableStateOf(Post())
+        private set
 
-    private val _uploadPostData = mutableStateOf<Resource<Boolean>>(Resource.Success(false))
-    val uploadPostData: State<Resource<Boolean>> = _uploadPostData
-
-    fun getAllPosts() {
+    fun createPost(post: Post) {
         viewModelScope.launch {
-            postUseCases.getAllPostsUseCases().collect {
-                _postData.value = it
+            postUseCases.createPost(post).collect { response ->
+                when (response) {
+                    is Resource.Loading -> {
+                        toastMessage.value = ""
+                        isLoading.value = true
+                    }
+                    is Resource.Success -> {
+                        isLoading.value = false
+                        loadPost()
+                    }
+                    is Resource.Error -> {
+                        toastMessage.value = "Update Failed"
+                    }
+                }
             }
         }
     }
 
-    fun uploadPost(
-        postImage: String,
-        postDescription: String,
-        time: Long,
-        userName: String,
-        userImage: String
-    ) {
+    private fun loadPost() {
         viewModelScope.launch {
-            postUseCases.uploadPostUseCase(
-                postImage = postImage,
-                postDescription = postDescription,
-                time = time,
-                userName = userName,
-                userImage = userImage
-            ).collect {
-                _uploadPostData.value = it
+            postUseCases.loadPost().collect { result ->
+                when (result) {
+                    is Resource.Loading -> {
+                        isLoading.value = true
+                    }
+                    is Resource.Success -> {
+                        result.data?.forEach {
+                            postDataStateFromFirebase.value = it
+                        }
+                    }
+                    is Resource.Error -> {
+                        toastMessage.value = "Loading data failed"
+                    }
+                }
+
             }
         }
     }
 
+    fun uploadPost(uri: Uri) {
+        viewModelScope.launch {
+            postUseCases.uploadPost(uri).collect { response ->
+                when (response) {
+                    is Resource.Loading -> {
+                        isLoading.value = true
+                    }
+                    is Resource.Success -> {
+                        //Picture Uploaded
+                        isLoading.value = false
+                        response.data?.let {
+                            Post(postImage = it)
+                        }?.let {
+                            createPost(
+                                it
+                            )
+                        }
+                    }
+                    is Resource.Error -> {}
+                }
+            }
+        }
+    }
 }
-
-
-
-
-
-
 

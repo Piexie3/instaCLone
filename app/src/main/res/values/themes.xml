@@ -4,5 +4,10 @@
     <style name="Theme.InstaClone" parent="android:Theme.Material.Light.NoActionBar">
         <item name="android:statusBarColor">@color/dark_purple</item>
     </style>
-
+    <style name="Theme.CustomSplashScreenTheme" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/dark_purple</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/insta_logo</item>
+        <item name="windowSplashScreenAnimationDuration">600</item>
+        <item name="postSplashScreenTheme">@style/Theme.CustomSplashScreenTheme</item>
+    </style>
 </resources>

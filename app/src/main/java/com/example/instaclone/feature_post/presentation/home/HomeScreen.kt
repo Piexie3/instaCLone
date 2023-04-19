@@ -11,7 +11,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -21,12 +21,13 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.instaclone.R
 import com.example.instaclone.core.composables.CircularImage
+import com.example.instaclone.feature_post.domain.models.Post
 import com.example.instaclone.feature_post.presentation.home.composables.PostCard
-import com.example.instaclone.feature_user.presentation.profile.UserViewModel
+import com.example.instaclone.feature_post.presentation.post.PostViewModel
+import com.example.instaclone.feature_user.domain.models.User
 import com.example.instaclone.navigation.BottomNavItem
 import com.example.instaclone.navigation.BottomNavMenu
 import com.example.instaclone.navigation.Screens
@@ -35,11 +36,17 @@ import kotlin.random.Random
 
 @Composable
 fun HomeScreen(
-    navController: NavController
+    navController: NavController,
+    postViewModel: PostViewModel
 ) {
-    val userViewModel: UserViewModel = hiltViewModel()
-    val result = userViewModel.getUserData.value
-    val obj = result.data
+    var userProfileFromFirebase by remember{
+        mutableStateOf(Post())
+    }
+    userProfileFromFirebase = postViewModel.postDataStateFromFirebase.value
+    val userName = userProfileFromFirebase.userName
+    val userImage = userProfileFromFirebase.userImage
+    val postDescription = userProfileFromFirebase.postDescription
+    val postImage = userProfileFromFirebase.postImage
     val link2 =
         "https://www.vibe.com/wp-content/uploads/2017/09/XXXTentacion-mugshot-orange-county-jail-1504911983-640x5601-1505432825.jpg?w=640&h=511&crop=1"
     Scaffold(
@@ -105,19 +112,21 @@ fun HomeScreen(
                 .padding(top = 5.dp)
         ) {
             LazyColumn() {
-                item{
-                    Stories(userImage = link2, userName = "Bett"){
+                item {
+                    Stories(userImage = link2, userName = "Bett") {
                         navController.navigate(Screens.StoryScreen.route)
                     }
                 }
-                item{
+                item {
                     Spacer(modifier = Modifier.height(8.dp))
                 }
                 items(100) {
 
                     PostCard(
-                        profileImage = link2,
-                        postImage = "https://picsum.photos/seed/${Random.nextInt()}/300/200"
+                        profileImage = userImage,
+                        postImage = postImage,
+                        userName = userName,
+                        postDescription
                     )
 
                 }
@@ -192,8 +201,8 @@ fun Stories(
                 ) {
                     CircularImage(
                         onClicked = {
-                                    navController()
-                                    },
+                            navController()
+                        },
                         userImage = "https://picsum.photos/seed/${Random.nextInt()}/300/200",
                         modifier = Modifier.size(70.dp)
                     )

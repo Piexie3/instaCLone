@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun PostSection(
     posts: List<Painter>,
-    modifier: Modifier,
+    modifier: Modifier=Modifier,
 ) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(3),

@@ -189,8 +189,8 @@ fun LoginScreen(
                     is Resource.Success -> {
                         LaunchedEffect(Unit) {
                             navController.popBackStack()
-                            navController.navigate(Screens.HomeScreen.route) {
-                                popUpTo(Screens.LoginScreen.route) {
+                            navController.navigate(Screens.ProfileUpdate.route) {
+                                popUpTo(Screens.ProfileUpdate.route) {
                                     inclusive = true
                                 }
                             }

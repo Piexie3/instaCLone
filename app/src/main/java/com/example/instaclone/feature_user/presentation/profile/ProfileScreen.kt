@@ -1,6 +1,5 @@
 package com.example.instaclone.feature_user.presentation.profile
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -12,29 +11,32 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.example.instaclone.R
-import com.example.instaclone.core.utils.Resource
 import com.example.instaclone.feature_user.domain.models.TabModel
-import com.example.instaclone.feature_user.presentation.profile.composables.*
+import com.example.instaclone.feature_user.domain.models.User
+import com.example.instaclone.feature_user.presentation.profile.composables.MyProfile
+import com.example.instaclone.feature_user.presentation.profile.composables.PostSection
+import com.example.instaclone.feature_user.presentation.profile.composables.StatSection
+import com.example.instaclone.feature_user.presentation.profile.composables.TabView
 import com.example.instaclone.navigation.BottomNavItem
 import com.example.instaclone.navigation.BottomNavMenu
 import com.example.instaclone.navigation.Screens
 
 @Composable
 fun ProfileScreen(
-    navController: NavController
+    navController: NavController,
+    profileViewModel: ProfileViewModel
 ) {
-    val userViewModel: UserViewModel = hiltViewModel()
-    userViewModel.getUserInfo()
-    val result = userViewModel.getUserData.value
-    val obj = result.data
 //    when(userViewModel.setUserData.value){
 //        is Resource.Success->{
 //
@@ -46,23 +48,55 @@ fun ProfileScreen(
 //
 //        }
 //    }
+    var isLoading by remember {
+        mutableStateOf(false)
+    }
+    isLoading = profileViewModel.isLoading.value
+    var userDataFromFirebase by remember { mutableStateOf(User()) }
+    userDataFromFirebase = profileViewModel.userDataStateFromFirebase.value
+
+    var email by remember {
+        mutableStateOf("")
+    }
+    email = userDataFromFirebase.userEmail
+
+    var name by remember { mutableStateOf("") }
+    name = userDataFromFirebase.userName
+
+    var surName by remember {
+        mutableStateOf("")
+    }
+    surName = userDataFromFirebase.userSurName
+    var bio by remember { mutableStateOf("") }
+    bio = userDataFromFirebase.bio
+
+    var phoneNumber by remember { mutableStateOf("") }
+    phoneNumber = userDataFromFirebase.userPhoneNumber
+
+
     var selectedTabIndex by remember {
         mutableStateOf(0)
     }
     val scaffoldState = rememberScaffoldState()
+    val isUserSignOut = profileViewModel.isUserSignOutState.value
+    LaunchedEffect(key1 = isUserSignOut) {
+        if (isUserSignOut) {
+            navController.popBackStack()
+            navController.navigate(Screens.LoginScreen.route)
+        }
+    }
     Scaffold(
         scaffoldState = scaffoldState,
         topBar = {
             TopAppBar(
                 title = {
-                    if (obj != null) {
-                        Text(
-                            text = obj.name,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 24.sp,
-                            fontFamily = FontFamily.Monospace,
-                        )
-                    }
+                    Text(
+                        text = name,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 24.sp,
+                        fontFamily = FontFamily.Monospace,
+                    )
+
                     Icon(
                         imageVector = Icons.Default.ArrowDropDown,
                         contentDescription = null
@@ -72,7 +106,7 @@ fun ProfileScreen(
                     IconButton(
                         modifier = Modifier.clip(CircleShape),
                         onClick = {
-                            navController.navigate(Screens.AddPostScreen.route)
+                            navController.navigate(Screens.CreatePostScreen.route)
                         }) {
                         Icon(
                             painter = painterResource(id = R.drawable.add),
@@ -123,41 +157,50 @@ fun ProfileScreen(
                             bottom = 20.dp,
                             start = 10.dp,
                             end = 10.dp
-                        )
+                        ),
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    if (obj != null) {
-                        RoundedCornerImage(
-                            image = obj.imageUrl,
-                        ){
-
-                        }
-                    }
+                    AsyncImage(
+                        model = ImageRequest.Builder(LocalContext.current)
+                            .data(userDataFromFirebase.imageUrl)
+                            .error(R.drawable.ic_broken_image)
+                            .crossfade(200)
+                            .build(),
+                        contentScale = ContentScale.Crop,
+                        contentDescription = "Profile Image"
+                    )
                     Spacer(modifier = Modifier.width(4.dp))
                     StatSection()
                 }
             }
-            if (obj != null) {
-                MyProfile(
-                    displayName = obj.name,
-                    bio = obj.bio,
-                    url = obj.webUrl
-                )
-            }
+
+            MyProfile(
+                displayName = surName,
+                bio = bio,
+                url = ""
+            )
+
             Spacer(modifier = Modifier.height(20.dp))
             Row(
                 horizontalArrangement = Arrangement.spacedBy(190.dp),
                 modifier = Modifier.padding(horizontal = 20.dp)
             ) {
                 Button(
-                    onClick = { /*TODO*/ },
+                    onClick = {
+                        navController.navigate(Screens.ProfileUpdate.route) {
+                            popUpTo(Screens.ProfileScreen.route) {
+                                inclusive = true
+                            }
+                        }
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .weight(0.45f)
                         .height(35.dp)
                 ) {
-                 Text(
-                     text = "Edit Profile"
-                 )
+                    Text(
+                        text = "Edit Profile"
+                    )
                 }
             }
             Spacer(modifier = Modifier.height(15.dp))
@@ -180,31 +223,26 @@ fun ProfileScreen(
                         text = "Contacts share"
                     )
                 )
-            ){
+            ) {
                 selectedTabIndex = it
             }
-//            when (selectedTabIndex) {
-//                0 -> PostSection(
-//                    posts = listOf(
-//                        painterResource(id = R.drawable.post2),
-//                        painterResource(id = R.drawable.post),
-//                        painterResource(id = R.drawable.img_2),
-//                        painterResource(id = R.drawable.img_2),
-//                        painterResource(id = R.drawable.profile_image),
-//                        painterResource(id = R.drawable.img_2),
-//                        painterResource(id = R.drawable.profile_image),
-//                        painterResource(id = R.drawable.img_2),
-//                        painterResource(id = R.drawable.post),
-//                    ),
-//                    modifier = Modifier.fillMaxWidth().padding(5.dp)
-//                )
-//                1->{
-//
-//                }
-//                2->{
-//
-//                }
-//            }
+            when (selectedTabIndex) {
+                0 -> PostSection(
+                    posts = listOf(
+                        painterResource(id = R.drawable.post2),
+                        painterResource(id = R.drawable.post),
+                        painterResource(id = R.drawable.profile_image),
+                        painterResource(id = R.drawable.profile_image),
+                        painterResource(id = R.drawable.post),
+                    )
+                )
+                1 -> {
+
+                }
+                2 -> {
+
+                }
+            }
         }
     }
 }

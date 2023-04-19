@@ -1,19 +1,17 @@
 package com.example.instaclone.feature_auth.data.repository
 
-import com.example.instaclone.core.utils.Constans
 import com.example.instaclone.core.utils.Resource
 import com.example.instaclone.feature_auth.domain.repository.AuthRepository
 import com.example.instaclone.feature_user.domain.models.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.auth.ktx.userProfileChangeRequest
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 class AuthRepositoryImpl @Inject constructor(
     private val auth: FirebaseAuth,
-    private val firestore: FirebaseFirestore
+    private val firestore: FirebaseFirestore,
 ) : AuthRepository {
     override val currentUser: FirebaseUser?
         get() = auth.currentUser
@@ -38,15 +36,13 @@ class AuthRepositoryImpl @Inject constructor(
     ): Resource<FirebaseUser>? {
         return try {
             val result = auth.createUserWithEmailAndPassword(email, password).await()
-            val userId = auth.currentUser?.uid!!
-            val obj = User(userName = userName, userId = userId, password = password, email = email)
+            val obj = User(userName = userName, password = password, userEmail = email)
 //            result?.user?.email?.let {
 //                result.user?.verifyBeforeUpdateEmail(it)
 //            }
 //            result?.user?.updateProfile(
 //                userProfileChangeRequest { setDisplayName(userName).build() }
 //            )?.await()
-            firestore.collection(Constans.COLLECTION_NAME_USERS).document(userId).set(obj).await()
             Resource.Success(result.user!!)
         } catch (e: Exception) {
             Resource.Error(e.localizedMessage ?: "Unexpected error occurred")

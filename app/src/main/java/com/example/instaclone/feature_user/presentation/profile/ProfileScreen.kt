@@ -1,5 +1,6 @@
 package com.example.instaclone.feature_user.presentation.profile
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -23,7 +24,6 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.instaclone.R
 import com.example.instaclone.feature_user.domain.models.TabModel
-import com.example.instaclone.feature_user.domain.models.User
 import com.example.instaclone.feature_user.presentation.profile.composables.MyProfile
 import com.example.instaclone.feature_user.presentation.profile.composables.PostSection
 import com.example.instaclone.feature_user.presentation.profile.composables.StatSection
@@ -37,42 +37,17 @@ fun ProfileScreen(
     navController: NavController,
     profileViewModel: ProfileViewModel
 ) {
-//    when(userViewModel.setUserData.value){
-//        is Resource.Success->{
-//
-//        }
-//        is Resource.Loading->{
-//
-//        }
-//        is Resource.Error->{
-//
-//        }
-//    }
     var isLoading by remember {
         mutableStateOf(false)
     }
     isLoading = profileViewModel.isLoading.value
-    var userDataFromFirebase by remember { mutableStateOf(User()) }
-    userDataFromFirebase = profileViewModel.userDataStateFromFirebase.value
 
-    var email by remember {
-        mutableStateOf("")
-    }
-    email = userDataFromFirebase.userEmail
-
-    var name by remember { mutableStateOf("") }
-    name = userDataFromFirebase.userName
-
-    var surName by remember {
-        mutableStateOf("")
-    }
-    surName = userDataFromFirebase.userSurName
-    var bio by remember { mutableStateOf("") }
-    bio = userDataFromFirebase.bio
-
-    var phoneNumber by remember { mutableStateOf("") }
-    phoneNumber = userDataFromFirebase.userPhoneNumber
-
+    val userDataFromFirebase = profileViewModel.userDataStateFromFirebase.value
+    val name = userDataFromFirebase.userName
+    val webUrl = userDataFromFirebase.webUrl
+    val surName = userDataFromFirebase.userSurName
+    val bio = userDataFromFirebase.bio
+    val url = userDataFromFirebase.url
 
     var selectedTabIndex by remember {
         mutableStateOf(0)
@@ -106,7 +81,7 @@ fun ProfileScreen(
                     IconButton(
                         modifier = Modifier.clip(CircleShape),
                         onClick = {
-                            navController.navigate(Screens.CreatePostScreen.route)
+                            navController.navigate(Screens.CreatePost.route)
                         }) {
                         Icon(
                             painter = painterResource(id = R.drawable.add),
@@ -160,16 +135,28 @@ fun ProfileScreen(
                         ),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    AsyncImage(
-                        model = ImageRequest.Builder(LocalContext.current)
-                            .data(userDataFromFirebase.imageUrl)
-                            .error(R.drawable.ic_broken_image)
-                            .crossfade(200)
-                            .build(),
-                        contentScale = ContentScale.Crop,
-                        contentDescription = "Profile Image"
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
+                    Box(
+                        modifier = Modifier
+                            .size(100.dp)
+                            .clip(CircleShape)
+                            .clickable {
+
+                            }
+                    ) {
+                        AsyncImage(
+                            model = ImageRequest.Builder(LocalContext.current)
+                                .data(userDataFromFirebase.imageUrl)
+                                .error(R.drawable.ic_broken_image)
+                                .crossfade(200)
+                                .build(),
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier
+                                .clip(CircleShape)
+                                .fillMaxSize(),
+                            contentDescription = "Profile Image"
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(4.dp).weight(.6f))
                     StatSection()
                 }
             }
@@ -177,7 +164,8 @@ fun ProfileScreen(
             MyProfile(
                 displayName = surName,
                 bio = bio,
-                url = ""
+                url = url,
+                webUrl = webUrl
             )
 
             Spacer(modifier = Modifier.height(20.dp))

@@ -87,7 +87,9 @@ class UserRepositoryImpl @Inject constructor(
             if (user.imageUrl != "") childUpdates["/imageUrl/"] =
                 user.imageUrl
             if (user.userSurName != "") childUpdates["/userSurName/"] = user.userSurName
-            if (user.bio != "") childUpdates["/userBio/"] = user.bio
+            if (user.bio != "") childUpdates["/bio/"] = user.bio
+            if (user.url != "") childUpdates["/url/"] = user.url
+            if (user.webUrl != "") childUpdates["/webUrl/"] = user.webUrl
             if (user.userPhoneNumber != "") childUpdates["/userPhoneNumber/"] =
                 user.userPhoneNumber
             childUpdates["/status/"] = UserStatus.ONLINE.toString()
@@ -106,7 +108,7 @@ class UserRepositoryImpl @Inject constructor(
         try {
             this@callbackFlow.trySendBlocking(Resource.Loading())
             val userUUID = authRepository.currentUser?.uid
-            val databaseReference = database.getReference(Constants.COLLECTION_NAME_USERS)
+            val databaseReference = database.getReference(COLLECTION_NAME_USERS)
             val postListener = databaseReference.addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     val userFromFirebaseDatabase =

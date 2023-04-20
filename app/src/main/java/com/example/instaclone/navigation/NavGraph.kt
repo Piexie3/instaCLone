@@ -12,6 +12,7 @@ import com.example.instaclone.feature_auth.presentation.login.LoginScreen
 import com.example.instaclone.feature_auth.presentation.signup.SignUpScreen
 import com.example.instaclone.feature_post.presentation.home.HomeScreen
 import com.example.instaclone.feature_post.presentation.home.composables.stories.StoryScreen
+import com.example.instaclone.feature_post.presentation.post.CreatePost
 import com.example.instaclone.feature_post.presentation.post.CreatePostScreen
 import com.example.instaclone.feature_post.presentation.post.PostViewModel
 import com.example.instaclone.feature_user.presentation.profile.AddPostScreen
@@ -33,7 +34,7 @@ fun NavGraph(
     val keyboardController = LocalSoftwareKeyboardController.current
     NavHost(
         navController = navController,
-        startDestination = Screens.ProfileUpdate.route
+        startDestination = Screens.HomeScreen.route
     ) {
         composable(route = Screens.LoginScreen.route) {
             LoginScreen(navController)
@@ -72,9 +73,11 @@ fun NavGraph(
         composable(route = Screens.AddPostScreen.route) {
             AddPostScreen()
         }
-//        composable(route = Screens.SplashScreen.route) {
-//            SplashScreen(navController)
-//        }
+        composable(route = Screens.CreatePost.route) {
+            if (keyboardController != null) {
+                CreatePost(postViewModel,navController,keyboardController)
+            }
+        }
 
     }
 

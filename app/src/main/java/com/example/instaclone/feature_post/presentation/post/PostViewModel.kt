@@ -11,6 +11,7 @@ import com.example.instaclone.feature_post.domain.models.Post
 import com.example.instaclone.feature_post.domain.models.PostRegister
 import com.example.instaclone.feature_post.domain.use_cases.PostUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -27,51 +28,10 @@ class PostViewModel @Inject constructor(
     var postDataStateFromFirebase = mutableStateOf(Post())
         private set
 
-    fun createPost(post: Post) {
+    fun uploadPictureToFirebase(uri: Uri) {
         viewModelScope.launch {
-            postUseCases.createPost(post).collect { response ->
-                when (response) {
-                    is Resource.Loading -> {
-                        toastMessage.value = ""
-                        isLoading.value = true
-                    }
-                    is Resource.Success -> {
-                        isLoading.value = false
-                        loadPost()
-                    }
-                    is Resource.Error -> {
-                        toastMessage.value = "Update Failed"
-                    }
-                }
-            }
-        }
-    }
-
-    private fun loadPost() {
-        viewModelScope.launch {
-            postUseCases.loadPost().collect { result ->
-                when (result) {
-                    is Resource.Loading -> {
-                        isLoading.value = true
-                    }
-                    is Resource.Success -> {
-                        result.data?.forEach {
-                            postDataStateFromFirebase.value = it
-                        }
-                    }
-                    is Resource.Error -> {
-                        toastMessage.value = "Loading data failed"
-                    }
-                }
-
-            }
-        }
-    }
-
-    fun uploadPost(uri: Uri) {
-        viewModelScope.launch {
-            postUseCases.uploadPost(uri).collect { response ->
-                when (response) {
+            postUseCases.uploadPost(uri).collect {response->
+                when(response){
                     is Resource.Loading -> {
                         isLoading.value = true
                     }
@@ -81,15 +41,64 @@ class PostViewModel @Inject constructor(
                         response.data?.let {
                             Post(postImage = it)
                         }?.let {
-                            createPost(
+                            createPostToFirebase(
                                 it
                             )
                         }
                     }
                     is Resource.Error -> {}
                 }
+
             }
         }
     }
+
+    fun createPostToFirebase(post: Post) {
+        viewModelScope.launch {
+            postUseCases.createPost(post).collect { response ->
+                when(response){
+                    is Resource.Loading -> {
+                        toastMessage.value = ""
+                        isLoading.value = true
+                    }
+                    is Resource.Success -> {
+                        isLoading.value = false
+                        if(response.data == true){
+                            toastMessage.value = "Profile Updated"
+                        }else{
+                            toastMessage.value = "Profile Saved"
+                        }
+                        //delay(2000) //Bu ne içindi hatırlayamadım.
+                        loadostFromFirebase()
+                    }
+                    is Resource.Error -> {
+                        toastMessage.value = "Update Failed"
+                    }
+                }
+            }
+        }
+    }
+
+
+
+
+    private fun loadostFromFirebase() {
+        viewModelScope.launch {
+            postUseCases.loadPost().collect { response ->
+                when(response){
+                    is Resource.Loading -> {
+                        isLoading.value = true
+                    }
+                    is Resource.Success -> {
+                        postDataStateFromFirebase.value = response.data!!
+                        delay(500)
+                        isLoading.value = false
+                    }
+                    is Resource.Error -> {}
+                }
+            }
+        }
+    }
+
 }
 

@@ -1,4 +1,4 @@
-package com.example.instaclone.feature_user.presentation.profile.composables
+package com.example.instaclone.feature_post.presentation.post
 
 import android.net.Uri
 import androidx.compose.foundation.focusable
@@ -16,17 +16,14 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.instaclone.feature_user.domain.models.User
-import com.example.instaclone.feature_user.domain.models.UserStatus
-import com.example.instaclone.feature_user.presentation.profile.ProfileViewModel
-import com.example.instaclone.navigation.Screens
+import com.example.instaclone.feature_post.domain.models.Post
+import com.example.instaclone.feature_user.presentation.profile.composables.ChooseProfilePicFromGallery
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun ProfileUpdate(
-    profileViewModel: ProfileViewModel = hiltViewModel(),
+fun CreatePost(
+    postViewModel: PostViewModel,
     navController: NavController,
     keyboardController: SoftwareKeyboardController
 ) {
@@ -34,43 +31,27 @@ fun ProfileUpdate(
     var isLoading by remember {
         mutableStateOf(false)
     }
-    isLoading = profileViewModel.isLoading.value
-    var userDataFromFirebase by remember { mutableStateOf(User()) }
-    userDataFromFirebase = profileViewModel.userDataStateFromFirebase.value
+    isLoading = postViewModel.isLoading.value
+    var postDataFromFirebase by remember { mutableStateOf(Post()) }
 
-    var email by remember {
-        mutableStateOf("")
-    }
-    email = userDataFromFirebase.userEmail
 
-    var name by remember { mutableStateOf("") }
-    name = userDataFromFirebase.userName
+    var postDescription by remember { mutableStateOf("") }
 
-    var surName by remember {
-        mutableStateOf("")
-    }
-    surName = userDataFromFirebase.userSurName
-    var bio by remember { mutableStateOf("") }
-    bio = userDataFromFirebase.bio
 
-    var phoneNumber by remember { mutableStateOf("") }
-    phoneNumber = userDataFromFirebase.userPhoneNumber
-
-    var userDataPictureUrl by remember { mutableStateOf("") }
-    userDataPictureUrl = userDataFromFirebase.imageUrl
+    var postImage by remember { mutableStateOf("") }
 
     val scrollState = rememberScrollState()
 
     var updatedImage by remember {
         mutableStateOf<Uri?>(null)
     }
-    val isUserSignOut = profileViewModel.isUserSignOutState.value
-    LaunchedEffect(key1 = isUserSignOut) {
-        if (isUserSignOut) {
-            navController.popBackStack()
-            navController.navigate(Screens.LoginScreen.route)
-        }
-    }
+//    val isUserSignOut = postViewModel.isUserSignOutState.value
+//    LaunchedEffect(key1 = isUserSignOut) {
+//        if (isUserSignOut) {
+//            navController.popBackStack()
+//            navController.navigate(Screens.LoginScreen.route)
+//        }
+//    }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -97,51 +78,30 @@ fun ProfileUpdate(
                     Box(
                         contentAlignment = Alignment.Center,
                     ) {
-                        ChooseProfilePicFromGallery(userDataPictureUrl) {
+                        ChooseProfilePicFromGallery(postImage) {
                             if (it != null) {
-                                profileViewModel.uploadPictureToFirebase(it)
+                                postViewModel.uploadPictureToFirebase(it)
                             }
                         }
                     }
                     Spacer(modifier = Modifier.height(5.dp))
-                    Text(text = email, style = MaterialTheme.typography.subtitle1)
-                    ProfileTextField(
-                        entry = name,
-                        hint = "Full Name",
-                        onChange = { name = it },
-                    )
-                    ProfileTextField(surName, "Surname", { surName = it })
-                    ProfileTextField(bio, "About You", { bio = it })
-                    ProfileTextField(
-                        phoneNumber, "Phone Number", { phoneNumber = it },
-                        keyboardType = KeyboardType.Phone
-                    )
+                    ProfileTextField(postDescription, "About You", { postDescription = it })
+
                     Button(
                         modifier = Modifier
                             .padding(top = 8.dp),
                         onClick = {
-                            if (name != "") {
-                                profileViewModel.updateProfileToFirebase(User(userName = name))
-                            }
-                            if (surName != "") {
-                                profileViewModel.updateProfileToFirebase(User(userSurName = surName))
-                            }
-                            if (bio != "") {
-                                profileViewModel.updateProfileToFirebase(User(bio = bio))
-                            }
-                            if (phoneNumber != "") {
-                                profileViewModel.updateProfileToFirebase(User(userPhoneNumber = phoneNumber))
+
+                            if (postDescription != "") {
+                                postViewModel.createPostToFirebase(Post(postDescription = postDescription))
                             }
                         },
-                        enabled = updatedImage != null || name != "" || surName != "" || bio != "" || phoneNumber != ""
+                        enabled =  postDescription != ""
                     ) {
-                        Text(text = "Save Profile", style = MaterialTheme.typography.subtitle1)
+                        Text(text = "Upload post", style = MaterialTheme.typography.subtitle1)
                     }
-                    LogOutCustomText {
-                        profileViewModel.setUserStatusToFirebaseAndSignOut(UserStatus.OFFLINE)
-                    }
-                    Spacer(modifier = Modifier.height(50.dp))
 
+                    Spacer(modifier = Modifier.height(50.dp))
                 }
             }
         }

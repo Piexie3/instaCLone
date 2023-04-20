@@ -83,12 +83,10 @@ class AppModule {
     @Singleton
     fun providesPostRepository(
         database: FirebaseDatabase,
-        auth: FirebaseAuth,
         storage: FirebaseStorage,
         authRepository: AuthRepository,
     ): PostRepository {
         return PostRepositoryImpl(
-            auth = auth,
             database = database,
             storage = storage,
             authRepository = authRepository

@@ -14,7 +14,6 @@ import com.example.instaclone.feature_post.domain.models.Post
 import com.example.instaclone.feature_user.domain.models.User
 import com.example.instaclone.feature_user.presentation.profile.ProfileViewModel
 import com.example.instaclone.feature_user.presentation.profile.composables.ChooseProfilePicFromGallery
-import com.example.instaclone.feature_user.presentation.profile.composables.ProfileTextField
 import com.example.instaclone.navigation.Screens
 
 @Composable
@@ -60,14 +59,14 @@ fun CreatePostScreen(
                 .padding(top = 4.dp)
                 .fillMaxWidth(),
             onClick = {
-                    postViewModel.createPost(
-                        Post(
-                            postDescription = postDescription,
-                            postImage = postImageUrl,
-                            userName = userDataFromFirebase.userSurName,
-                            userImage = userDataFromFirebase.imageUrl
-                        )
+                postViewModel.createPostToFirebase(
+                    Post(
+                        postDescription = postDescription,
+                        postImage = postImageUrl,
+                        userName = userDataFromFirebase.userSurName,
+                        userImage = userDataFromFirebase.imageUrl
                     )
+                )
                 navController.popBackStack()
                 navController.navigate(Screens.HomeScreen.route)
             },

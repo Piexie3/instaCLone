@@ -14,6 +14,7 @@ import com.example.instaclone.ui.theme.blue
 fun MyProfile(
     displayName: String,
     bio: String,
+    webUrl:String,
     url: String
 ) {
     Column(
@@ -34,6 +35,14 @@ fun MyProfile(
         Spacer(modifier = Modifier.height(5.dp))
         Text(
             text = url,
+            lineHeight = 20.sp,
+            color = blue,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+        Spacer(modifier = Modifier.height(5.dp))
+        Text(
+            text = webUrl,
             lineHeight = 20.sp,
             color = blue,
             maxLines = 1,

@@ -7,5 +7,5 @@ class LoadPost @Inject constructor(
     private val repository: PostRepository
 ) {
     suspend operator fun invoke()=
-        repository.loadPostsFromFirebase()
+        repository.loadPostFromFirebase()
 }

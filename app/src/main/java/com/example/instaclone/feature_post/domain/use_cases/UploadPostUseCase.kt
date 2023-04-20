@@ -8,5 +8,5 @@ class UploadPostUseCase @Inject constructor(
     private val repository: PostRepository
 ) {
     suspend operator fun invoke(uri: Uri) =
-        repository.uploadPostImageToFirebase(uri)
+        repository.uploadPictureToFirebase(uri)
 }

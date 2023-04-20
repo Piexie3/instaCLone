@@ -8,6 +8,7 @@ data class User(
     var oneSignalUserId: String = "",
     var userName: String = "",
     var imageUrl: String = "",
+    var url: String = "",
     var userSurName: String = "",
     var bio: String = "",
     var userPhoneNumber: String = "",

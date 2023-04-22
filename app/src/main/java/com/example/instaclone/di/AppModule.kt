@@ -6,10 +6,7 @@ import com.example.instaclone.feature_auth.domain.use_cases.AuthUseCases
 import com.example.instaclone.feature_auth.domain.use_cases.IsUserAuthenticated
 import com.example.instaclone.feature_post.data.repository.PostRepositoryImpl
 import com.example.instaclone.feature_post.domain.repository.PostRepository
-import com.example.instaclone.feature_post.domain.use_cases.CreatePost
-import com.example.instaclone.feature_post.domain.use_cases.LoadPost
-import com.example.instaclone.feature_post.domain.use_cases.PostUseCases
-import com.example.instaclone.feature_post.domain.use_cases.UploadPostUseCase
+import com.example.instaclone.feature_post.domain.use_cases.*
 import com.example.instaclone.feature_user.data.repository.UserRepositoryImpl
 import com.example.instaclone.feature_user.domain.repository.UserRepository
 import com.example.instaclone.feature_user.domain.use_cases.*
@@ -85,11 +82,13 @@ class AppModule {
         database: FirebaseDatabase,
         storage: FirebaseStorage,
         authRepository: AuthRepository,
+        db: FirebaseFirestore
     ): PostRepository {
         return PostRepositoryImpl(
             database = database,
             storage = storage,
-            authRepository = authRepository
+            authRepository = authRepository,
+            db = db
         )
     }
 
@@ -99,7 +98,8 @@ class AppModule {
         return PostUseCases(
             createPost = CreatePost(repository),
             uploadPost = UploadPostUseCase(repository),
-            loadPost = LoadPost(repository)
+            loadPost = LoadPost(repository),
+//            createPostRoomToFirebase = CreatePostRoomToFirebase(repository)
         )
     }
 

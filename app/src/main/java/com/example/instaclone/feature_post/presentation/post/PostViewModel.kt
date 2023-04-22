@@ -40,10 +40,6 @@ class PostViewModel @Inject constructor(
                         isLoading.value = false
                         response.data?.let {
                             Post(postImage = it)
-                        }?.let {
-                            createPostToFirebase(
-                                it
-                            )
                         }
                     }
                     is Resource.Error -> {}
@@ -100,5 +96,21 @@ class PostViewModel @Inject constructor(
         }
     }
 
+//    fun createPostRoom(){
+//        viewModelScope.launch {
+//            postUseCases.createPostRoomToFirebase().collect{result->
+//                when(result){
+//                    is Resource.Loading -> {
+//                        isLoading.value = true
+//                    }
+//                    is Resource.Success -> {
+//                        delay(500)
+//                    }
+//                    is Resource.Error -> {}
+//                }
+//
+//            }
+//        }
+//    }
 }
 

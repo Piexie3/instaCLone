@@ -17,8 +17,10 @@ import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.instaclone.core.composables.ChoosePostFromGallery
 import com.example.instaclone.feature_post.domain.models.Post
 import com.example.instaclone.feature_user.presentation.profile.composables.ChooseProfilePicFromGallery
+import com.example.instaclone.navigation.Screens
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -55,7 +57,8 @@ fun CreatePost(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .wrapContentHeight().imePadding()
+            .wrapContentHeight()
+            .imePadding()
     ) {
         Surface(
             modifier = Modifier
@@ -78,7 +81,7 @@ fun CreatePost(
                     Box(
                         contentAlignment = Alignment.Center,
                     ) {
-                        ChooseProfilePicFromGallery(postImage) {
+                        ChoosePostFromGallery(postImage) {
                             if (it != null) {
                                 postViewModel.uploadPictureToFirebase(it)
                             }
@@ -95,6 +98,8 @@ fun CreatePost(
                             if (postDescription != "") {
                                 postViewModel.createPostToFirebase(Post(postDescription = postDescription))
                             }
+                            navController.popBackStack()
+                            navController.navigate(Screens.HomeScreen.route)
                         },
                         enabled =  postDescription != ""
                     ) {

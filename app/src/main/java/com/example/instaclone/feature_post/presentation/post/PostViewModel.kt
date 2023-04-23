@@ -23,11 +23,13 @@ class PostViewModel @Inject constructor(
         private set
     var isLoading = mutableStateOf(false)
         private set
-    var post: List<PostRegister> by mutableStateOf(listOf())
-        private set
+
     var postDataStateFromFirebase = mutableStateOf(Post())
         private set
 
+    init {
+        loadPostFromFirebase()
+    }
     fun uploadPictureToFirebase(uri: Uri) {
         viewModelScope.launch {
             postUseCases.uploadPost(uri).collect {response->
@@ -64,8 +66,6 @@ class PostViewModel @Inject constructor(
                         }else{
                             toastMessage.value = "Profile Saved"
                         }
-                        //delay(2000) //Bu ne içindi hatırlayamadım.
-                        loadostFromFirebase()
                     }
                     is Resource.Error -> {
                         toastMessage.value = "Update Failed"
@@ -78,7 +78,7 @@ class PostViewModel @Inject constructor(
 
 
 
-    private fun loadostFromFirebase() {
+    private fun loadPostFromFirebase() {
         viewModelScope.launch {
             postUseCases.loadPost().collect { response ->
                 when(response){

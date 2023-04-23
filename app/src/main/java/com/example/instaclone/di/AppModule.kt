@@ -89,6 +89,7 @@ class AppModule {
             storage = storage,
             authRepository = authRepository,
             db = db
+
         )
     }
 

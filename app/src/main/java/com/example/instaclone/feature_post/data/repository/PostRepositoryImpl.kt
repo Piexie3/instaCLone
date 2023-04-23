@@ -105,24 +105,9 @@ class PostRepositoryImpl @Inject constructor(
         try {
             this@callbackFlow.trySendBlocking(Resource.Loading())
             val userUUID = authRepository.currentUser?.uid
-            val databaseReference = database.getReference(COLLECTION_NAME_POSTS)
-            val postListener = databaseReference.addValueEventListener(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    val postFromFirebaseDatabase =
-                        snapshot.child(userUUID!!).child("post").getValue(Post::class.java)
-                            ?: Post()
-                    this@callbackFlow.trySendBlocking(Resource.Success(postFromFirebaseDatabase))
-                }
+            val databaseReference = db.collection(COLLECTION_NAME_POSTS)
+            databaseReference.get().addOnCompleteListener { snapshot->
 
-                override fun onCancelled(error: DatabaseError) {
-                    this@callbackFlow.trySendBlocking(Resource.Error(error.message))
-                }
-            })
-            databaseReference.addValueEventListener(postListener)
-            awaitClose {
-                databaseReference.removeEventListener(postListener)
-                channel.close()
-                cancel()
             }
         } catch (e: Exception) {
             this@callbackFlow.trySendBlocking(Resource.Error(e.message ?: ERROR_MESSAGE))

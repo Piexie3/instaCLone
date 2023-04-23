@@ -99,20 +99,3 @@ fun ChoosePostFromGallery(
     }
 }
 
-@Composable
-fun SelectImage(
-    onSelect: (Uri?) -> Unit
-) {
-    var imageUri by remember {
-        mutableStateOf<Uri?>(null)
-    }
-    var bitmap by remember {
-        mutableStateOf<Bitmap?>(null)
-    }
-    val launcher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent()
-    ) { uri: Uri? ->
-        imageUri = uri
-        onSelect(uri)
-    }
-}
